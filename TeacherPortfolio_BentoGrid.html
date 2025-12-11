@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJBKDWWT2P"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-QJBKDWWT2P');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Education Data Management</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { heading: ['Prompt', 'sans-serif'], body: ['Sarabun', 'sans-serif'] },
+                    colors: { 'apple-gray': '#F5F5F7', 'accent-blue': '#0071e3' },
+                    boxShadow: { 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)' },
+                    animation: { 'fade-in': 'fadeIn 0.8s ease-out' },
+                    keyframes: { fadeIn: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #F5F5F7; }
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .bento-item { transition: all 0.3s ease; }
+        .bento-item:hover { transform: translateY(-5px); box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1); z-index: 10; }
+        .hero-gradient-text { background: linear-gradient(135deg, #0071e3, #42a5f5, #00C7BE); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* M Graphic Style */
+        .m-graphic {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+            position: relative; overflow: hidden;
+        }
+        .m-graphic::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+            animation: spin 10s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="font-body text-gray-800 min-h-screen p-4 md:p-8 flex justify-center items-start pb-24 md:pb-8">
+
+    <div class="max-w-7xl w-full mx-auto animate-fade-in">
+        
+        <!-- Header -->
+        <header class="mb-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div>
+                <h1 class="font-heading text-3xl md:text-4xl font-bold tracking-tight hero-gradient-text">
+                    Education Data Management Digital
+                </h1>
+                <p class="text-gray-500 mt-1 text-lg">แฟ้มสะสมผลงานดิจิทัล</p>
+            </div>
+            <div class="glass px-6 py-2 rounded-full shadow-sm flex items-center space-x-3">
+                <a href="Main_Dashboard.html" class="text-accent-blue font-bold text-sm hover:underline flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie"></i> กลับสู่ Dashboard
+                </a>
+            </div>
+        </header>
+
+        <!-- Bento Grid Layout -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- 1. Basic Info Card (ข้อมูลพื้นฐาน) -->
+            <div class="bento-item glass rounded-[2rem] p-8 flex flex-col justify-center items-center text-center relative overflow-hidden bg-white h-full min-h-[350px]">
+                <!-- Background Decor -->
+                <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-blue-50 to-transparent"></div>
+                
+                <div class="relative z-10">
+                    <!-- Profile Graphic -->
+                    <div class="w-36 h-36 md:w-44 md:h-44 rounded-full border-4 border-white shadow-xl flex-shrink-0 overflow-hidden m-graphic flex items-center justify-center mx-auto mb-6">
+                        <span class="relative z-10 font-heading font-bold text-7xl text-white drop-shadow-lg">M</span>
+                    </div>
+                    
+                    <h2 class="font-heading text-3xl font-bold text-gray-800 mb-2">นายเอกอาวุธ สุริยะเจริญ</h2>
+                    <div class="inline-block bg-blue-100 text-accent-blue px-4 py-1 rounded-full text-sm font-bold mb-4">
+                        ครูคอมพิวเตอร์
+                    </div>
+                    
+                    <p class="text-gray-500 text-lg">โรงเรียนเทศบาล ๑ บ้านกลาง</p>
+                    <p class="text-gray-400 text-sm mt-2 font-light">
+                        <i class="fa-solid fa-envelope mr-2"></i> aekarwuts@gmail.com
+                    </p>
+
+                    <div class="mt-6 flex justify-center gap-3">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-green-500 hover:text-white transition"><i class="fa-brands fa-line"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-red-500 hover:text-white transition"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Featured Video Block (Smart Fit: รองรับแนวตั้ง/แนวนอน) -->
+            <div class="bento-item bg-black rounded-[2rem] overflow-hidden shadow-lg relative group h-full min-h-[350px]">
+                
+                <!-- Play Button Layer -->
+                <div class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
+                    <div class="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:scale-110 transition duration-300 border border-white/50">
+                        <i class="fa-solid fa-play text-white text-3xl ml-1"></i>
+                    </div>
+                </div>
+
+                <!-- Layer 1: Blurred Background (Full Fill) -->
+                <!-- รูปนี้จะเบลอและขยายเต็มพื้นที่เพื่อสร้างบรรยากาศ -->
+                <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+                     class="absolute inset-0 w-full h-full object-cover blur-xl opacity-60 scale-110" alt="Video Background">
+                
+                <!-- Layer 2: Main Content (Smart Fit) -->
+                <!-- รูปนี้จะแสดงเต็มสัดส่วนโดยไม่โดนตัด (Contain) -->
+                <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+                     class="relative z-10 w-full h-full object-contain shadow-2xl transition duration-500 group-hover:scale-105" alt="Video Cover">
+                
+                <!-- Text Overlay -->
+                <div class="absolute bottom-0 left-0 p-8 z-40 w-full bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+                    <span class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded uppercase mb-2 inline-block shadow-sm">Featured Video</span>
+                    <h3 class="text-white font-heading text-2xl font-bold drop-shadow-md">แนะนำสื่อการสอนยุคดิจิทัล</h3>
+                    <p class="text-gray-200 text-sm mt-1 drop-shadow-sm">ตัวอย่างการจัดการเรียนรู้รายวิชาคอมพิวเตอร์</p>
+                </div>
+            </div>
+
+            <!-- 3. Photo Gallery Block (Smart Fit Grid) - Full Width -->
+            <div class="bento-item glass col-span-1 md:col-span-2 rounded-[2rem] p-8 bg-white">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-heading text-2xl font-bold text-gray-800"><i class="fa-solid fa-images text-accent-blue mr-2"></i> ภาพกิจกรรมการสอน</h3>
+                    <a href="#" class="text-sm text-gray-500 hover:text-accent-blue transition">ดูทั้งหมด <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                </div>
+
+                <!-- Gallery Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    
+                    <!-- Image 1 (Example: Portrait/Vertical) -->
+                    <div class="aspect-square rounded-xl overflow-hidden relative group cursor-pointer bg-gray-100 border border-gray-100">
+                        <!-- Blur Back -->
+                        <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="absolute inset-0 w-full h-full object-cover blur-sm opacity-50">
+                        <!-- Main Image -->
+                        <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="relative z-10 w-full h-full object-contain transition duration-500 group-hover:scale-110">
+                    </div>
+
+                    <!-- Image 2 (Example: Landscape/Horizontal) -->
+                    <div class="aspect-square rounded-xl overflow-hidden relative group cursor-pointer bg-gray-100 border border-gray-100">
+                        <!-- Blur Back -->
+                        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="absolute inset-0 w-full h-full object-cover blur-sm opacity-50">
+                        <!-- Main Image -->
+                        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="relative z-10 w-full h-full object-contain transition duration-500 group-hover:scale-110">
+                    </div>
+
+                    <!-- Image 3 (Example: Landscape) -->
+                    <div class="aspect-square rounded-xl overflow-hidden relative group cursor-pointer bg-gray-100 border border-gray-100">
+                        <!-- Blur Back -->
+                        <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="absolute inset-0 w-full h-full object-cover blur-sm opacity-50">
+                        <!-- Main Image -->
+                        <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="relative z-10 w-full h-full object-contain transition duration-500 group-hover:scale-110">
+                    </div>
+
+                    <!-- Add Image Button -->
+                    <div class="aspect-square rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 hover:border-accent-blue hover:text-accent-blue transition cursor-pointer bg-gray-50 hover:bg-blue-50">
+                        <i class="fa-solid fa-plus text-2xl mb-2"></i>
+                        <span class="text-xs font-medium">เพิ่มรูปภาพ</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="mt-12 text-center text-gray-400 text-sm pb-8">
+            <p>&copy; 2025 Education Data Management Digital. โรงเรียนเทศบาล ๑ บ้านกลาง</p>
+        </footer>
+
+    </div>
+</body>
+</html>

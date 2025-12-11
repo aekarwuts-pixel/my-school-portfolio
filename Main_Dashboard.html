@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJBKDWWT2P"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-QJBKDWWT2P');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Dashboard - Education Data Management</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { heading: ['Prompt', 'sans-serif'], body: ['Sarabun', 'sans-serif'] },
+                    colors: { 'primary': '#0071e3', 'apple-gray': '#F5F5F7' },
+                    boxShadow: { 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)', 'hover': '0 10px 25px -5px rgba(0, 0, 0, 0.1)' },
+                    animation: { 
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'spin-slow': 'spin 3s linear infinite'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #F5F5F7; background-image: radial-gradient(#E1E1E6 1px, transparent 1px); background-size: 20px 20px; }
+        
+        /* Glassmorphism Effect */
+        .glass { 
+            background: rgba(255, 255, 255, 0.7); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.5); 
+        }
+        
+        .bento-card { 
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
+            border: 1px solid rgba(255, 255, 255, 0.6); 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
+            overflow: hidden; 
+            position: relative;
+        }
+        .bento-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15); 
+            z-index: 10; 
+            border-color: #0071e3; 
+        }
+        
+        .hero-gradient-text { background: linear-gradient(135deg, #0071e3, #42a5f5, #00C7BE); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* Reveal Animation on Hover */
+        .reveal-content {
+            max-height: 0;
+            opacity: 0;
+            transition: all 0.4s ease-in-out;
+            transform: translateY(20px);
+        }
+        .bento-card:hover .reveal-content {
+            max-height: 500px; /* Arbitrary large height */
+            opacity: 1;
+            transform: translateY(0);
+            margin-top: 1rem;
+        }
+        .bento-card:hover .main-icon {
+            transform: scale(0.8) translateY(-10px);
+            color: #0071e3;
+        }
+        .main-icon { transition: all 0.3s ease; }
+
+        /* M Graphic */
+        .m-graphic { background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899); position: relative; overflow: hidden; }
+        .m-graphic::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%); animation: spin 10s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Markdown Styles for AI Result */
+        .prose h1, .prose h2, .prose h3 { font-weight: bold; margin-top: 1em; margin-bottom: 0.5em; color: #1e3a8a; }
+        .prose ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1em; }
+        .prose ol { list-style-type: decimal; padding-left: 1.5em; margin-bottom: 1em; }
+        .prose p { margin-bottom: 0.8em; }
+        .prose strong { color: #0071e3; }
+        .prose table { width: 100%; border-collapse: collapse; margin: 1em 0; }
+        .prose th, .prose td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; }
+        .prose th { background-color: #f9fafb; font-weight: 600; }
+        
+        /* Quote Animation */
+        @keyframes fade-in-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .quote-box { animation: fade-in-up 1s ease-out forwards; }
+    </style>
+</head>
+<body class="font-body text-gray-800 p-4 md:p-8 min-h-screen pb-28 md:pb-8">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+
+        <!-- Header -->
+        <header>
+            <div class="flex flex-col md:flex-row justify-between items-end mb-6">
+                <div>
+                    <h1 class="font-heading text-3xl font-bold hero-gradient-text">Education Data Management Digital</h1>
+                    <p class="text-gray-500 font-heading mt-1">โรงเรียนเทศบาล ๑ บ้านกลาง | <span class="text-primary">aekarwuts@gmail.com</span></p>
+                    
+                    <!-- AI Daily Quote Widget -->
+                    <div id="ai-quote-container" class="mt-3 flex items-center gap-2 text-sm text-gray-500 bg-white/50 backdrop-blur-sm py-1 px-3 rounded-full border border-gray-200 inline-flex hidden quote-box">
+                        <i class="fa-solid fa-sparkles text-yellow-400"></i>
+                        <span id="ai-quote-text" class="italic">กำลังสร้างแรงบันดาลใจ...</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                     <img src="logo-1-1-1.png" alt="Logo" class="h-10 w-auto opacity-80" onerror="this.style.display='none'">
+                     <div class="text-right hidden md:block">
+                        <div class="text-xs text-gray-400">TODAY</div>
+                        <div class="font-heading font-medium text-gray-700" id="current-date">--/--/----</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Grid Layout -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 auto-rows-[minmax(160px,auto)]">
+
+            <!-- 1. ข้อมูลพื้นฐาน (Basic Info) -->
+            <div class="bento-card glass col-span-1 md:col-span-2 row-span-2 p-8 flex flex-col justify-center items-center text-center group bg-white">
+                <div class="relative z-10 transition-all duration-300 group-hover:-translate-y-4">
+                    <div class="w-28 h-28 rounded-full border-4 border-white shadow-lg m-graphic flex items-center justify-center mx-auto mb-4 group-hover:scale-90 transition-transform">
+                        <span class="relative z-10 font-heading font-bold text-5xl text-white drop-shadow-md">M</span>
+                    </div>
+                    <h2 class="font-heading text-2xl font-bold text-gray-800 leading-tight group-hover:text-primary transition-colors">ข้อมูลพื้นฐาน</h2>
+                    <p class="text-gray-400 text-sm mt-1">Basic Information</p>
+                </div>
+                
+                <!-- Hover Content -->
+                <div class="reveal-content w-full max-w-md bg-gray-50/80 rounded-xl p-4 backdrop-blur-sm border border-gray-100">
+                    <ul class="space-y-2 text-left text-sm text-gray-600">
+                        <li class="flex items-center gap-3 p-2 hover:bg-white rounded-lg transition shadow-sm">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><i class="fa-solid fa-user"></i></div>
+                            <span>ข้อมูลประจำตัวครูผู้สอน</span>
+                        </li>
+                        <li class="flex items-center gap-3 p-2 hover:bg-white rounded-lg transition shadow-sm">
+                            <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600"><i class="fa-solid fa-graduation-cap"></i></div>
+                            <span>ประวัติการศึกษา</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Decor -->
+                <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-pulse-slow"></div>
+            </div>
+
+            <!-- 2. PA (Performance Agreement) -->
+            <div class="bento-card bg-white col-span-1 row-span-2 p-6 border-l-4 border-green-500 flex flex-col justify-center items-center text-center group">
+                <div class="main-icon w-16 h-16 rounded-full bg-green-50 flex items-center justify-center text-green-600 text-3xl mb-2">
+                    <i class="fa-solid fa-file-contract"></i>
+                </div>
+                <h3 class="font-heading font-bold text-gray-800 text-xl group-hover:text-green-600 transition">รายงาน PA</h3>
+                
+                <!-- Hover Content -->
+                <div class="reveal-content w-full space-y-2 mt-4">
+                    <a href="#" class="flex justify-between items-center p-3 rounded-xl bg-green-500 text-white shadow-lg transform hover:scale-105 transition">
+                        <span class="font-bold text-sm">2568</span>
+                        <span class="text-[10px] bg-white text-green-600 px-2 py-0.5 rounded-full font-bold">New</span>
+                    </a>
+                    <a href="#" class="flex justify-between items-center p-3 rounded-xl bg-gray-50 text-gray-600 hover:bg-gray-100 transition border border-gray-200">
+                        <span class="font-medium text-sm">2567</span>
+                        <i class="fa-solid fa-check-circle text-green-500"></i>
+                    </a>
+                    <a href="#" class="flex justify-between items-center p-3 rounded-xl bg-gray-50 text-gray-600 hover:bg-gray-100 transition border border-gray-200">
+                        <span class="font-medium text-sm">2566</span>
+                        <i class="fa-solid fa-check-circle text-green-500"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 3. การจัดการเรียนการสอน (Teaching) -->
+            <div class="bento-card bg-white col-span-1 p-6 flex flex-col justify-center items-center text-center group">
+                <div class="main-icon w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl mb-2">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </div>
+                <h3 class="font-heading font-bold text-gray-800">การจัดการเรียนการสอน</h3>
+                
+                <div class="reveal-content w-full text-left bg-blue-50/50 p-3 rounded-xl border border-blue-100">
+                    <div class="text-xs text-gray-600 space-y-2">
+                        <p class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-blue-500 text-[10px]"></i> ปฏิบัติหน้าที่</p>
+                        <p class="flex items-center gap-2"><i class="fa-solid fa-book text-blue-500 text-[10px]"></i> แผนการสอน</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. โครงการ (Projects) -->
+            <div class="bento-card bg-white col-span-1 p-6 flex flex-col justify-center items-center text-center group">
+                <div class="main-icon w-14 h-14 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-2xl mb-2">
+                    <i class="fa-solid fa-folder-open"></i>
+                </div>
+                <h3 class="font-heading font-bold text-gray-800">โครงการ</h3>
+                
+                <div class="reveal-content w-full text-left space-y-1 mt-2">
+                    <a href="#" class="block text-xs text-gray-600 p-2 bg-orange-50 rounded-lg hover:bg-orange-100 transition flex justify-between">2568 <i class="fa-solid fa-chevron-right text-[10px]"></i></a>
+                    <a href="#" class="block text-xs text-gray-600 p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition flex justify-between">2567 <i class="fa-solid fa-chevron-right text-[10px]"></i></a>
+                    <a href="#" class="block text-xs text-gray-600 p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition flex justify-between">2566 <i class="fa-solid fa-chevron-right text-[10px]"></i></a>
+                </div>
+            </div>
+
+            <!-- 5. นวัตกรรมและเทคโนโลยี (Innovation) - Wide -->
+            <a href="Innovation_Hub.html" class="bento-card bg-gradient-to-r from-[#1c1c1e] to-[#2c2c2e] text-white col-span-1 md:col-span-2 p-6 flex flex-col justify-center items-center text-center group relative overflow-hidden">
+                <div class="relative z-10 transition-all duration-300 group-hover:-translate-y-2">
+                    <div class="main-icon text-purple-400 text-4xl mb-2 animate-float">
+                        <i class="fa-solid fa-rocket"></i>
+                    </div>
+                    <h3 class="font-heading text-xl font-bold">นวัตกรรมและเทคโนโลยี</h3>
+                </div>
+                
+                <div class="reveal-content w-full grid grid-cols-2 gap-2 text-xs text-left mt-2">
+                    <div class="bg-white/10 p-2 rounded backdrop-blur hover:bg-white/20 transition">Digital transformation</div>
+                    <div class="bg-white/10 p-2 rounded backdrop-blur hover:bg-white/20 transition">สื่อดิจิทัล</div>
+                    <div class="bg-white/10 p-2 rounded backdrop-blur hover:bg-white/20 transition">นวัตกรรมการสอน</div>
+                    <div class="bg-white/10 p-2 rounded backdrop-blur hover:bg-white/20 transition">e-Learning / EdTech</div>
+                </div>
+                
+                <!-- BG Effect -->
+                <div class="absolute right-0 top-0 bottom-0 w-1/2 bg-gradient-to-l from-purple-900/50 to-transparent"></div>
+            </a>
+
+            <!-- 6. การวัดและประเมินผล (Assessment) -->
+            <div class="bento-card bg-white col-span-1 p-6 flex flex-col justify-center items-center text-center group">
+                <div class="main-icon w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl mb-2">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <h3 class="font-heading font-bold text-gray-800 text-sm">การวัดและประเมินผล</h3>
+                <div class="reveal-content w-full text-xs text-gray-600 space-y-2 mt-2">
+                    <div class="bg-purple-50 p-2 rounded">แบบทดสอบ</div>
+                    <div class="bg-purple-50 p-2 rounded">Rubric Score</div>
+                </div>
+            </div>
+
+            <!-- 7. พัฒนาการนักเรียน (Student Dev) -->
+            <div class="bento-card bg-white col-span-1 p-6 flex flex-col justify-center items-center text-center group">
+                <div class="main-icon w-14 h-14 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center text-2xl mb-2">
+                    <i class="fa-solid fa-child-reaching"></i>
+                </div>
+                <h3 class="font-heading font-bold text-gray-800 text-sm">พัฒนาการนักเรียน</h3>
+                <div class="reveal-content w-full mt-2">
+                    <a href="Student_Report.html" class="block bg-pink-500 hover:bg-pink-600 text-white p-2 rounded-lg text-xs font-bold transition shadow-md">
+                        บันทึกพฤติกรรม
+                    </a>
+                </div>
+            </div>
+
+            <!-- 8. กิจกรรมพัฒนาผู้เรียน (Activities) -->
+            <div class="bento-card bg-white col-span-1 p-6 flex flex-col justify-center items-center text-center group">
+                <div class="main-icon w-14 h-14 rounded-2xl bg-yellow-50 text-yellow-600 flex items-center justify-center text-2xl mb-2">
+                    <i class="fa-solid fa-campground"></i>
+                </div>
+                <h3 class="font-heading font-bold text-gray-800 text-sm">กิจกรรมพัฒนาผู้เรียน</h3>
+                <div class="reveal-content w-full text-xs text-gray-600 space-y-2 mt-2 text-left bg-yellow-50/50 p-3 rounded-xl">
+                    <p>• ชุมนุม</p>
+                    <p>• กิจกรรมเสริมหลักสูตร</p>
+                </div>
+            </div>
+
+            <!-- 9. ระบบล็อกอินแบบใหม่ (New Login System) -->
+            <div class="glass col-span-1 md:col-span-2 p-6 rounded-[2rem] flex items-center justify-around relative overflow-hidden shadow-lg border border-white/40">
+                <!-- Background Blur & Gradient -->
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 backdrop-blur-xl z-0"></div>
+                
+                <!-- Action 1: Login -->
+                <a href="Classroom_Manager.html" class="relative z-10 flex flex-col items-center gap-2 group cursor-pointer">
+                    <div class="w-16 h-16 rounded-full bg-white/80 flex items-center justify-center text-blue-600 text-2xl shadow-lg transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 ring-4 ring-white/30">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                    </div>
+                    <span class="text-xs font-bold text-gray-700 bg-white/60 px-3 py-1 rounded-full backdrop-blur-sm group-hover:bg-blue-600 group-hover:text-white transition-colors">เข้าสู่ระบบ</span>
+                </a>
+
+                <!-- Divider -->
+                <div class="w-px h-12 bg-gray-300/50 relative z-10"></div>
+
+                <!-- Action 2: Register -->
+                <a href="#" class="relative z-10 flex flex-col items-center gap-2 group cursor-pointer">
+                    <div class="w-16 h-16 rounded-full bg-white/80 flex items-center justify-center text-purple-600 text-2xl shadow-lg transform group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 ring-4 ring-white/30">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+                    <span class="text-xs font-bold text-gray-700 bg-white/60 px-3 py-1 rounded-full backdrop-blur-sm group-hover:bg-purple-600 group-hover:text-white transition-colors">สมัครสมาชิก</span>
+                </a>
+
+                <!-- Divider -->
+                <div class="w-px h-12 bg-gray-300/50 relative z-10"></div>
+
+                <!-- Action 3: Request Permission -->
+                <a href="#" class="relative z-10 flex flex-col items-center gap-2 group cursor-pointer">
+                    <div class="w-16 h-16 rounded-full bg-white/80 flex items-center justify-center text-orange-500 text-2xl shadow-lg transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 ring-4 ring-white/30">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <span class="text-xs font-bold text-gray-700 bg-white/60 px-3 py-1 rounded-full backdrop-blur-sm group-hover:bg-orange-500 group-hover:text-white transition-colors">ขอสิทธิ์</span>
+                </a>
+                
+                <!-- Floating AI Button -->
+                <button onclick="toggleAIModal()" class="absolute top-2 right-2 text-gray-400 hover:text-blue-600 transition p-2 hover:bg-white/50 rounded-full" title="AI Assistant">
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                </button>
+            </div>
+
+        </div>
+
+        <footer class="mt-12 text-center text-gray-400 text-sm pb-8">
+            <p>© 2025 Education Data Management Digital. โรงเรียนเทศบาล ๑ บ้านกลาง</p>
+        </footer>
+
+    </div>
+
+    <!-- AI Modal -->
+    <div id="ai-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="toggleAIModal()"></div>
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl relative z-10 flex flex-col max-h-[85vh] overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-4 text-white flex justify-between items-center">
+                <h3 class="font-heading font-bold flex items-center gap-2"><i class="fa-solid fa-robot"></i> ผู้ช่วยครูอัจฉริยะ (Gemini) ✨</h3>
+                <button onclick="toggleAIModal()" class="hover:bg-white/20 rounded-full p-1 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <label class="block text-sm font-bold text-gray-700 mb-2 font-heading">เลือกโหมดการทำงาน</label>
+                <select id="ai-mode" class="w-full p-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none mb-4 font-body">
+                    <optgroup label="✨ ทั่วไป">
+                        <option value="general">💬 ถาม-ตอบ ทั่วไป</option>
+                    </optgroup>
+                    <optgroup label="📚 การเรียนการสอน">
+                        <option value="lesson">📝 ช่วยร่างแผนการสอน</option>
+                        <option value="quiz">❓ ช่วยออกข้อสอบ</option>
+                        <option value="rubric">📊 สร้างเกณฑ์ประเมิน (Rubric)</option>
+                        <option value="simplify">👶 ย่อยเนื้อหาบทเรียน</option>
+                    </optgroup>
+                    <optgroup label="💡 สื่อและนวัตกรรม">
+                        <option value="image">🎨 สร้างภาพสื่อการสอน</option>
+                        <option value="idea">💡 ระดมสมอง / หาไอเดีย</option>
+                    </optgroup>
+                    <optgroup label="📂 งานธุรการและดูแลนักเรียน">
+                        <option value="document">📝 ร่างหนังสือราชการ/จดหมาย</option>
+                        <option value="analysis">🧠 วิเคราะห์ผู้เรียน/ปรึกษาปัญหา</option>
+                    </optgroup>
+                </select>
+
+                <label class="block text-sm font-bold text-gray-700 mb-2 font-heading">รายละเอียด / หัวข้อ</label>
+                <textarea id="ai-prompt" rows="3" class="w-full p-3 border rounded-xl mb-4 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-body" placeholder="เช่น เรื่องระบบสุริยะ, จดหมายเชิญประชุมผู้ปกครอง..."></textarea>
+                
+                <button onclick="callGemini()" id="btn-gen" class="w-full bg-gray-900 text-white py-3 rounded-xl font-bold text-sm shadow-md hover:bg-black transition flex justify-center items-center gap-2">
+                    <i class="fa-solid fa-bolt text-yellow-400"></i> สร้างเนื้อหา
+                </button>
+                
+                <div id="ai-result" class="mt-6 text-sm text-gray-700 bg-blue-50 p-4 rounded-xl hidden border border-blue-100 prose prose-sm max-w-none"></div>
+                <div id="ai-image-result" class="mt-6 hidden flex justify-center">
+                    <!-- Image will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Nav -->
+    <nav class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-xl border-t border-gray-200 px-6 py-3 md:hidden z-50 rounded-t-2xl shadow-[0_-5px_10px_rgba(0,0,0,0.02)]">
+        <div class="relative flex justify-between items-center max-w-sm mx-auto">
+            <a href="#" class="flex flex-col items-center text-blue-600"><i class="fa-solid fa-house text-xl mb-1"></i><span class="text-[10px]">หน้าหลัก</span></a>
+            <a href="Classroom_Manager.html" class="flex flex-col items-center text-gray-400"><i class="fa-solid fa-chalkboard-user text-xl mb-1"></i><span class="text-[10px]">ระบบ</span></a>
+            <a href="Resource_Library.html" class="flex flex-col items-center text-gray-400"><i class="fa-solid fa-photo-film text-xl mb-1"></i><span class="text-[10px]">สื่อ</span></a>
+        </div>
+    </nav>
+
+    <script>
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+        function toggleAIModal() { document.getElementById('ai-modal').classList.toggle('hidden'); }
+
+        // Gemini API Configuration
+        const apiKey = ""; 
+
+        // 1. Fetch Daily Quote on Load
+        async function fetchDailyQuote() {
+            const container = document.getElementById('ai-quote-container');
+            const quoteText = document.getElementById('ai-quote-text');
+            
+            // Show container
+            container.classList.remove('hidden');
+            
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        contents: [{ parts: [{ text: "ขอคำคมสั้นๆ 1 ประโยค สร้างแรงบันดาลใจสำหรับครู เป็นภาษาไทย ไม่ต้องมีเครื่องหมายคำพูด" }] }] 
+                    })
+                });
+                const data = await response.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "การเรียนรู้ไม่มีที่สิ้นสุด";
+                quoteText.textContent = text.trim();
+            } catch (e) {
+                quoteText.textContent = "สวัสดีคุณครู วันนี้ขอให้เป็นวันที่ดีครับ";
+            }
+        }
+        
+        // Call on load
+        fetchDailyQuote();
+
+        // 2. Main Call Gemini Function
+        async function callGemini() {
+            const promptInput = document.getElementById('ai-prompt').value;
+            const mode = document.getElementById('ai-mode').value;
+            const resDiv = document.getElementById('ai-result');
+            const imgDiv = document.getElementById('ai-image-result');
+            const btn = document.getElementById('btn-gen');
+            
+            if(!promptInput) { alert("กรุณาระบุหัวข้อครับ"); return; }
+            
+            // Reset UI
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> กำลังประมวลผล...';
+            btn.disabled = true;
+            resDiv.classList.add('hidden');
+            imgDiv.classList.add('hidden');
+            resDiv.innerHTML = '';
+            imgDiv.innerHTML = '';
+
+            try {
+                if (mode === 'image') {
+                    // Image Generation
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
+                    const payload = {
+                        instances: [{ prompt: promptInput }],
+                        parameters: { sampleCount: 1 }
+                    };
+                    
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) throw new Error(`Image API Error`);
+                    
+                    const data = await response.json();
+                    const base64 = data.predictions?.[0]?.bytesBase64Encoded;
+                    
+                    if (base64) {
+                        imgDiv.classList.remove('hidden');
+                        imgDiv.innerHTML = `<img src="data:image/png;base64,${base64}" class="rounded-xl shadow-lg border border-gray-200 w-full max-w-xs" alt="Generated Image"><br><a href="data:image/png;base64,${base64}" download="ai-image.png" class="mt-2 inline-block text-blue-600 text-xs hover:underline">ดาวน์โหลดรูปภาพ</a>`;
+                    } else {
+                        throw new Error("No image generated");
+                    }
+
+                } else {
+                    // Text Generation
+                    let systemPrompt = "คุณเป็นผู้ช่วยครูอัจฉริยะ ตอบคำถามกระชับและเป็นประโยชน์ด้วยภาษาไทย";
+                    let userPrompt = promptInput;
+
+                    if (mode === 'lesson') {
+                        systemPrompt = "คุณเป็นผู้เชี่ยวชาญด้านการศึกษา เขียนแผนการสอนภาษาไทยที่ละเอียด มีหัวข้อ: วัตถุประสงค์, กิจกรรม, สื่อ, และการวัดผล ใช้รูปแบบ Markdown";
+                        userPrompt = `เขียนแผนการสอนเรื่อง: ${promptInput}`;
+                    } else if (mode === 'quiz') {
+                        systemPrompt = "คุณเป็นครู ออกข้อสอบปรนัย 5 ข้อ พร้อมเฉลย ภาษาไทย ใช้รูปแบบ Markdown";
+                        userPrompt = `ออกข้อสอบเรื่อง: ${promptInput}`;
+                    } else if (mode === 'idea') {
+                        systemPrompt = "คุณเป็นนักนวัตกรรมการศึกษา เสนอไอเดียการสอนที่สร้างสรรค์และทันสมัย";
+                        userPrompt = `ขอไอเดียการสอนเรื่อง: ${promptInput}`;
+                    } else if (mode === 'rubric') {
+                        systemPrompt = "คุณเป็นผู้เชี่ยวชาญการวัดประเมินผล สร้างตาราง Rubric Scoring สำหรับหัวข้อที่ระบุ โดยแบ่งเป็น 4 ระดับคุณภาพ (ดีมาก, ดี, พอใช้, ปรับปรุง) ภาษาไทย ใช้ Markdown Table";
+                        userPrompt = `สร้างเกณฑ์ประเมิน (Rubric) เรื่อง: ${promptInput}`;
+                    } else if (mode === 'simplify') {
+                        systemPrompt = "คุณเป็นครูที่อธิบายเรื่องยากให้เป็นเรื่องง่าย สรุป/เรียบเรียงเนื้อหานี้ใหม่ให้เหมาะกับนักเรียน ใช้ภาษาที่เป็นกันเองและเข้าใจง่าย";
+                        userPrompt = `ย่อยเนื้อหาเรื่องนี้ให้นักเรียนเข้าใจง่าย: ${promptInput}`;
+                    } else if (mode === 'document') {
+                        systemPrompt = "คุณเป็นธุรการโรงเรียนมืออาชีพ ร่างหนังสือราชการหรือจดหมายถึงผู้ปกครองตามหัวข้อ ใช้ภาษาทางการและถูกต้องตามระเบียบงานสารบรรณ";
+                        userPrompt = `ร่างจดหมาย/บันทึกข้อความ เรื่อง: ${promptInput}`;
+                    } else if (mode === 'analysis') {
+                        systemPrompt = "คุณเป็นนักจิตวิทยาการศึกษาและครูแนะแนว วิเคราะห์กรณีศึกษาหรือพฤติกรรมนักเรียน พร้อมเสนอแนวทางแก้ไขเชิงบวก";
+                        userPrompt = `วิเคราะห์กรณีศึกษา/พฤติกรรม: ${promptInput}`;
+                    }
+
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            contents: [{ parts: [{ text: userPrompt }] }],
+                            systemInstruction: { parts: [{ text: systemPrompt }] }
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัย ไม่สามารถสร้างเนื้อหาได้ในขณะนี้";
+                    resDiv.classList.remove('hidden');
+                    resDiv.innerHTML = marked.parse(text);
+                }
+
+            } catch (e) { 
+                console.error(e);
+                resDiv.classList.remove('hidden');
+                resDiv.innerHTML = '<p class="text-red-500 text-center">เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง</p>'; 
+            }
+            
+            btn.innerHTML = '<i class="fa-solid fa-bolt text-yellow-400"></i> สร้างเนื้อหา';
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>

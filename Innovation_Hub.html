@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJBKDWWT2P"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-QJBKDWWT2P');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innovation Hub - Education Data Management</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { heading: ['Prompt', 'sans-serif'], body: ['Sarabun', 'sans-serif'] },
+                    colors: { 'primary': '#0071e3', 'dark-bg': '#0f172a' },
+                    animation: { 
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    },
+                    keyframes: { 
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } } 
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #F5F5F7; }
+        .glass-nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        
+        /* Modern Card */
+        .tech-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .tech-card:hover { transform: translateY(-10px) scale(1.02); }
+        
+        /* Neon Glow Text */
+        .glow-text { text-shadow: 0 0 10px rgba(0, 113, 227, 0.5); }
+        
+        /* Categories Scroll */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+
+        /* AI Insight Box */
+        .insight-box {
+            background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body class="font-body text-gray-800 pb-20">
+
+    <!-- Navbar -->
+    <nav class="glass-nav fixed top-0 w-full z-50 px-4 md:px-8 py-3 flex justify-between items-center h-16">
+        <div class="flex items-center gap-4">
+            <a href="Main_Dashboard.html" class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-100 transition shadow-sm">
+                <i class="fa-solid fa-arrow-left text-gray-600"></i>
+            </a>
+            <h1 class="font-heading text-lg font-bold text-gray-900 hidden md:block">นวัตกรรมและเทคโนโลยี <span class="text-primary text-xs font-normal bg-blue-50 px-2 py-0.5 rounded-full ml-2">Innovation Hub</span></h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="toggleAIModal('match')" class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hover:shadow-purple-500/30 transition flex items-center gap-2">
+                <i class="fa-solid fa-robot"></i> <span class="hidden sm:inline">AI Tech Matcher</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section (Showcase) -->
+    <div class="relative bg-dark-bg text-white pt-24 pb-32 overflow-hidden rounded-b-[3rem] shadow-2xl mb-10">
+        <!-- Animated Background -->
+        <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-600/30 rounded-full blur-[120px] -mr-20 -mt-20 animate-pulse"></div>
+        <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-600/20 rounded-full blur-[100px] -ml-20 -mb-20 animate-float"></div>
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            
+            <!-- AI Daily Insight (New Feature) -->
+            <div id="ai-insight-container" class="mb-8 hidden animate-fade-in">
+                <div class="insight-box rounded-2xl p-4 md:p-6 flex items-start gap-4 max-w-3xl mx-auto transform hover:scale-[1.01] transition duration-300">
+                    <div class="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-300 text-xl flex-shrink-0">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-cyan-300 text-xs font-bold uppercase tracking-wider mb-1">AI Daily Insight</h4>
+                        <p id="ai-insight-text" class="text-gray-200 text-sm md:text-base italic leading-relaxed">
+                            กำลังโหลดเกร็ดความรู้เทคโนโลยีการศึกษา...
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center gap-10">
+                <div class="w-full md:w-1/2 space-y-6">
+                    <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-xs font-bold text-cyan-300">
+                        <i class="fa-solid fa-bolt"></i> Trending Now
+                    </div>
+                    <h1 class="font-heading text-4xl md:text-6xl font-bold leading-tight">
+                        The Future of <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 glow-text">Digital Learning</span>
+                    </h1>
+                    <p class="text-gray-300 text-lg leading-relaxed max-w-lg">
+                        สำรวจโลกแห่งนวัตกรรมการศึกษา อัปเดตเครื่องมือ EdTech ใหม่ล่าสุด และเทคนิคการสอนยุคดิจิทัลเพื่อห้องเรียนแห่งอนาคต
+                    </p>
+                    <div class="flex gap-4">
+                        <button class="bg-white text-dark-bg px-8 py-3 rounded-full font-bold hover:bg-gray-200 transition shadow-lg shadow-white/20">
+                            ดูนวัตกรรมแนะนำ
+                        </button>
+                        <button class="px-8 py-3 rounded-full font-bold border border-white/30 hover:bg-white/10 transition backdrop-blur-sm">
+                            วิดีโอสาธิต
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 3D Illustration / Showcase Image -->
+                <div class="w-full md:w-1/2 relative h-[400px] animate-float">
+                    <img src="https://images.unsplash.com/photo-1614726365723-49cfae963956?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+                         class="w-full h-full object-cover rounded-3xl shadow-2xl border-4 border-white/10 rotate-3 hover:rotate-0 transition duration-700" 
+                         alt="VR Education">
+                    
+                    <!-- Floating Cards -->
+                    <div class="absolute -bottom-6 -left-6 bg-white/10 backdrop-blur-xl p-4 rounded-2xl border border-white/20 shadow-xl flex items-center gap-3 animate-float" style="animation-delay: 1s;">
+                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white"><i class="fa-solid fa-vr-cardboard"></i></div>
+                        <div>
+                            <p class="text-xs text-gray-400">Technology</p>
+                            <p class="font-bold text-sm">Virtual Reality</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="max-w-7xl mx-auto px-4 md:px-8 -mt-20 relative z-20">
+
+        <!-- 1. Categories Filter -->
+        <div class="flex gap-3 overflow-x-auto pb-4 hide-scroll mb-6">
+            <button onclick="filterTech('all')" class="cat-btn active bg-white text-gray-800 px-6 py-3 rounded-xl shadow-lg border border-white/50 font-bold hover:scale-105 transition whitespace-nowrap ring-2 ring-primary">ทั้งหมด</button>
+            <button onclick="filterTech('ai')" class="cat-btn bg-white/80 text-gray-600 px-6 py-3 rounded-xl shadow-md backdrop-blur border border-white/50 font-medium hover:bg-white hover:scale-105 transition whitespace-nowrap"><i class="fa-solid fa-robot text-purple-500 mr-2"></i>AI Tools</button>
+            <button onclick="filterTech('gamification')" class="cat-btn bg-white/80 text-gray-600 px-6 py-3 rounded-xl shadow-md backdrop-blur border border-white/50 font-medium hover:bg-white hover:scale-105 transition whitespace-nowrap"><i class="fa-solid fa-gamepad text-orange-500 mr-2"></i>Gamification</button>
+            <button onclick="filterTech('media')" class="cat-btn bg-white/80 text-gray-600 px-6 py-3 rounded-xl shadow-md backdrop-blur border border-white/50 font-medium hover:bg-white hover:scale-105 transition whitespace-nowrap"><i class="fa-solid fa-photo-film text-green-500 mr-2"></i>Digital Media</button>
+            <button onclick="filterTech('iot')" class="cat-btn bg-white/80 text-gray-600 px-6 py-3 rounded-xl shadow-md backdrop-blur border border-white/50 font-medium hover:bg-white hover:scale-105 transition whitespace-nowrap"><i class="fa-solid fa-microchip text-blue-500 mr-2"></i>IoT & Robot</button>
+        </div>
+
+        <!-- 2. Innovation Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="innovation-grid">
+            <!-- Cards will be injected by JS -->
+        </div>
+
+    </div>
+
+    <!-- AI Modal -->
+    <div id="ai-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleAIModal()"></div>
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-gradient-to-r from-purple-600 to-blue-600 p-6 text-white flex-shrink-0">
+                <h3 class="font-heading font-bold text-xl flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles"></i> <span id="modal-title">AI Assistant</span></h3>
+                <p class="text-white/80 text-sm mt-1" id="modal-desc">ผู้ช่วยอัจฉริยะสำหรับครู</p>
+                <button onclick="toggleAIModal()" class="absolute top-4 right-4 hover:bg-white/20 rounded-full p-2 transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-1">
+                <!-- Matcher Mode Inputs -->
+                <div id="mode-match" class="hidden mode-content">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">วิชา หรือ หัวข้อที่ต้องการสอน</label>
+                    <input type="text" id="ai-subject" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-purple-500 outline-none mb-4" placeholder="เช่น คณิตศาสตร์ เรื่องเรขาคณิต">
+                    
+                    <label class="block text-sm font-bold text-gray-700 mb-2">ปัญหา หรือ สิ่งที่ต้องการเน้น</label>
+                    <textarea id="ai-goal" rows="2" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-purple-500 outline-none mb-4" placeholder="เช่น นักเรียนเบื่อหน่าย, ต้องการให้มีส่วนร่วม"></textarea>
+                </div>
+
+                <!-- Guide Mode Inputs -->
+                <div id="mode-guide" class="hidden mode-content">
+                    <div class="bg-blue-50 p-3 rounded-lg mb-4 flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center text-blue-700 font-bold"><i class="fa-solid fa-toolbox"></i></div>
+                        <div>
+                            <p class="text-xs text-blue-600 uppercase font-bold">Tool</p>
+                            <p class="font-bold text-gray-800" id="selected-tool-name">...</p>
+                        </div>
+                    </div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">จะนำไปสอนในวิชา/ระดับชั้นไหน?</label>
+                    <input type="text" id="ai-context" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-purple-500 outline-none mb-4" placeholder="เช่น ภาษาอังกฤษ ม.1 เรื่องคำศัพท์">
+                </div>
+
+                <button onclick="runAI()" id="btn-ai" class="w-full py-3 bg-gray-900 text-white rounded-xl font-bold shadow-lg hover:bg-black transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bolt text-yellow-400"></i> เริ่มประมวลผล
+                </button>
+
+                <div id="ai-result" class="mt-6 hidden bg-purple-50 p-4 rounded-xl border border-purple-100 prose prose-sm max-w-none text-gray-700"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Mock Data ---
+        const innovations = [
+            { 
+                id: 1, type: 'ai', title: 'ChatGPT for Education', 
+                desc: 'ผู้ช่วยอัจฉริยะสำหรับการร่างแผนการสอน ออกข้อสอบ และตอบคำถามยากๆ',
+                img: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600',
+                pop: 'Hot 🔥'
+            },
+            { 
+                id: 2, type: 'gamification', title: 'Kahoot! & Quizizz', 
+                desc: 'แพลตฟอร์มเกมตอบคำถามที่ทำให้นักเรียนตื่นเต้นและสนุกกับการวัดผล',
+                img: 'https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?w=600',
+                pop: 'Popular'
+            },
+            { 
+                id: 3, type: 'media', title: 'Canva for Education', 
+                desc: 'เครื่องมือออกแบบกราฟิกที่ง่ายที่สุด สำหรับทำสไลด์ ใบงาน และวิดีโอ',
+                img: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600',
+                pop: 'Must Have'
+            },
+            { 
+                id: 4, type: 'iot', title: 'Micro:bit Coding', 
+                desc: 'บอร์ดไมโครคอนโทรลเลอร์ขนาดจิ๋ว สำหรับเรียนรู้พื้นฐาน IoT และการเขียนโปรแกรม',
+                img: 'https://images.unsplash.com/photo-1555679427-1f6dfcce943b?w=600',
+                pop: 'Trending'
+            },
+            { 
+                id: 5, type: 'ai', title: 'Perplexity AI', 
+                desc: 'Search Engine ยุคใหม่ที่ช่วยค้นหาข้อมูลวิจัยและอ้างอิงได้อย่างแม่นยำ',
+                img: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600',
+                pop: 'New'
+            },
+            { 
+                id: 6, type: 'media', title: 'Augmented Reality (AR)', 
+                desc: 'สื่อการสอน 3 มิติ ทะลุจอ ช่วยให้อธิบายเรื่องนามธรรมให้เห็นภาพจริง',
+                img: 'https://images.unsplash.com/photo-1626379953822-baec19c3accd?w=600',
+                pop: 'Future'
+            }
+        ];
+
+        let currentMode = 'match';
+        const apiKey = ""; // API Key
+
+        // --- Core Functions ---
+        function init() {
+            renderGrid('all');
+            fetchDailyInsight();
+        }
+
+        // 1. Render Grid with AI Guide Button
+        function renderGrid(filter) {
+            const grid = document.getElementById('innovation-grid');
+            grid.innerHTML = '';
+            
+            const filtered = innovations.filter(item => filter === 'all' || item.type === filter);
+            
+            filtered.forEach(item => {
+                let badgeColor = 'bg-gray-100 text-gray-600';
+                if(item.pop.includes('Hot')) badgeColor = 'bg-red-500 text-white';
+                if(item.pop.includes('New')) badgeColor = 'bg-green-500 text-white';
+                if(item.pop.includes('Must')) badgeColor = 'bg-blue-500 text-white';
+
+                grid.innerHTML += `
+                    <div class="tech-card bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 flex flex-col h-full cursor-pointer group">
+                        <div class="relative h-48 overflow-hidden">
+                            <img src="${item.img}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                            <div class="absolute top-3 right-3 ${badgeColor} text-[10px] font-bold px-3 py-1 rounded-full shadow-md uppercase tracking-wider">
+                                ${item.pop}
+                            </div>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-2 h-2 rounded-full bg-primary"></span>
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">${item.type}</span>
+                            </div>
+                            <h3 class="font-heading text-xl font-bold text-gray-800 mb-2 group-hover:text-primary transition">${item.title}</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed mb-4 flex-1">${item.desc}</p>
+                            
+                            <div class="pt-4 mt-auto border-t border-gray-100 flex gap-2">
+                                <button onclick="openGuideModal('${item.title}')" class="flex-1 py-2 bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 text-primary text-xs font-bold rounded-lg transition flex items-center justify-center gap-2 border border-blue-100">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-purple-500"></i> วิธีใช้สอนจริง
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterTech(type) {
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-primary', 'bg-white', 'text-gray-800');
+                btn.classList.add('bg-white/80', 'text-gray-600');
+            });
+            event.currentTarget.classList.remove('bg-white/80', 'text-gray-600');
+            event.currentTarget.classList.add('bg-white', 'text-gray-800', 'ring-2', 'ring-primary');
+            renderGrid(type);
+        }
+
+        // --- AI Modal Logic ---
+        function toggleAIModal(mode = null) {
+            const modal = document.getElementById('ai-modal');
+            const matchDiv = document.getElementById('mode-match');
+            const guideDiv = document.getElementById('mode-guide');
+            const title = document.getElementById('modal-title');
+            const desc = document.getElementById('modal-desc');
+            const result = document.getElementById('ai-result');
+
+            if (mode) currentMode = mode;
+            
+            // Reset UI
+            result.classList.add('hidden');
+            result.innerHTML = '';
+            matchDiv.classList.add('hidden');
+            guideDiv.classList.add('hidden');
+
+            if (currentMode === 'match') {
+                title.textContent = 'AI Tech Matcher';
+                desc.textContent = 'ช่วยเลือกเครื่องมือที่ใช่ สำหรับห้องเรียนของคุณ';
+                matchDiv.classList.remove('hidden');
+            } else if (currentMode === 'guide') {
+                title.textContent = 'AI Implementation Guide';
+                desc.textContent = 'แนะนำแนวทางการนำเครื่องมือไปใช้สอนจริง';
+                guideDiv.classList.remove('hidden');
+            }
+
+            modal.classList.toggle('hidden');
+        }
+
+        function openGuideModal(toolName) {
+            document.getElementById('selected-tool-name').textContent = toolName;
+            toggleAIModal('guide');
+        }
+
+        // --- Gemini API Calls ---
+        
+        // 1. Run AI (Matcher & Guide)
+        async function runAI() {
+            const btn = document.getElementById('btn-ai');
+            const resDiv = document.getElementById('ai-result');
+            let prompt = "";
+
+            if (currentMode === 'match') {
+                const subject = document.getElementById('ai-subject').value;
+                const goal = document.getElementById('ai-goal').value;
+                if(!subject) { alert('กรุณาระบุวิชาครับ'); return; }
+                prompt = `ฉันสอนวิชา "${subject}" และมีเป้าหมายคือ "${goal}" ช่วยแนะนำเครื่องมือ EdTech หรือนวัตกรรมการสอนที่เหมาะสมที่สุด 3 อันดับ พร้อมเหตุผลสั้นๆ เป็นภาษาไทย`;
+            } else {
+                const tool = document.getElementById('selected-tool-name').textContent;
+                const context = document.getElementById('ai-context').value;
+                if(!context) { alert('กรุณาระบุบริบทการสอนครับ'); return; }
+                prompt = `ฉันต้องการใช้เครื่องมือ "${tool}" ในการสอน "${context}" ช่วยแนะนำกิจกรรมการสอน 1 กิจกรรมแบบเป็นขั้นตอน (Step-by-step) ที่นำไปใช้ได้จริง และน่าสนใจ เป็นภาษาไทย`;
+            }
+
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> กำลังประมวลผล...';
+            btn.disabled = true;
+            resDiv.classList.remove('hidden');
+            resDiv.innerHTML = 'AI กำลังทำงาน...';
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const data = await response.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "เกิดข้อผิดพลาดในการสร้างเนื้อหา";
+                resDiv.innerHTML = marked.parse(text);
+            } catch (e) {
+                resDiv.textContent = "เกิดข้อผิดพลาดในการเชื่อมต่อ";
+            }
+            
+            btn.innerHTML = 'เริ่มประมวลผล';
+            btn.disabled = false;
+        }
+
+        // 2. Daily Insight
+        async function fetchDailyInsight() {
+            const container = document.getElementById('ai-insight-container');
+            const textEl = document.getElementById('ai-insight-text');
+            
+            try {
+                // Show container immediately to indicate loading
+                container.classList.remove('hidden');
+                
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: "บอกเกร็ดความรู้สั้นๆ เกี่ยวกับเทคโนโลยีการศึกษาในอนาคต (Future EdTech Trend) 1 เรื่อง เป็นภาษาไทย ความยาวไม่เกิน 2 บรรทัด" }] }] })
+                });
+                const data = await response.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if(text) textEl.textContent = text.trim();
+            } catch (e) {
+                console.log("Insight Error");
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
