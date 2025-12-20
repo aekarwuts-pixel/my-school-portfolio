@@ -1,18 +1,11 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJBKDWWT2P"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-QJBKDWWT2P');
-    </script>
-
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QJBKDWWT2P');</script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แผนการสอน - Education Data Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lesson Plan Manager</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -24,389 +17,538 @@
             theme: {
                 extend: {
                     fontFamily: { heading: ['Prompt', 'sans-serif'], body: ['Sarabun', 'sans-serif'] },
-                    colors: { 'primary': '#0071e3', 'apple-gray': '#F5F5F7' },
-                    boxShadow: { 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)', 'hover': '0 10px 25px -5px rgba(0, 0, 0, 0.1)' },
-                    animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
+                    colors: { 'primary': '#0071e3', 'bg-gray': '#F5F5F7' },
+                    animation: { 'pulse-slow': 'pulse 3s infinite' }
                 }
             }
         }
     </script>
     <style>
-        body { background-color: #F5F5F7; }
-        .glass-nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        body { background-color: #F5F5F7; font-family: 'Prompt', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .nav-icon { transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        .active-nav .nav-icon { transform: translateY(-5px); color: #0071e3; }
+        .active-nav span { color: #0071e3; font-weight: 600; }
         
-        /* Timeline Styles */
-        .timeline-container { overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
-        .timeline-container::-webkit-scrollbar { display: none; }
-        .timeline-line { height: 4px; background: #e5e7eb; position: relative; top: 24px; min-width: 800px; z-index: 0; }
-        .timeline-point { z-index: 10; transition: all 0.3s; }
-        .timeline-point:hover { transform: scale(1.1); }
-        .timeline-point.active .point-dot { background: #0071e3; box-shadow: 0 0 0 4px #bfdbfe; }
-        .timeline-point.completed .point-dot { background: #10b981; }
+        /* Custom Elements */
+        .plan-checkbox:checked { background-color: #0071e3; border-color: #0071e3; }
+        .modal-tab { border-bottom: 2px solid transparent; transition: all 0.3s; }
+        .modal-tab.active { color: #0071e3; border-bottom: 2px solid #0071e3; background-color: #eff6ff; }
         
-        /* Card Hover */
-        .plan-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid transparent; position: relative; }
-        .plan-card:hover { transform: translateY(-4px); border-color: #0071e3; box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1); }
+        /* Hide Scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Status Badge */
-        .status-badge { font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 99px; text-transform: uppercase; }
-        .status-draft { background: #f3f4f6; color: #6b7280; }
-        .status-active { background: #dbeafe; color: #1e40af; }
-        .status-done { background: #d1fae5; color: #065f46; }
-
-        /* Delete Button on Card */
-        .delete-btn { opacity: 0; transition: opacity 0.3s; }
-        .plan-card:hover .delete-btn { opacity: 1; }
+        /* Markdown Table Style */
+        .prose table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9em; }
+        .prose th, .prose td { border: 1px solid #e2e8f0; padding: 0.5rem; text-align: left; }
+        .prose th { background-color: #f8fafc; font-weight: 600; color: #1e293b; }
+        
+        /* Print Styles */
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { position: absolute; left: 0; top: 0; width: 100%; background: white; padding: 20mm; }
+            .no-print { display: none !important; }
+        }
     </style>
 </head>
-<body class="font-body text-gray-800 pb-20">
-
+<body class="pb-28 pt-20">
+    
     <!-- Navbar -->
-    <nav class="glass-nav fixed top-0 w-full z-40 px-4 md:px-8 py-3 flex justify-between items-center h-16">
-        <div class="flex items-center gap-4">
-            <a href="Main_Dashboard.html" class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-100 transition shadow-sm">
-                <i class="fa-solid fa-arrow-left text-gray-600"></i>
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-40 px-4 py-3 flex justify-between items-center h-16 border-b shadow-sm no-print transition-all duration-300">
+        <div class="flex items-center gap-3 overflow-hidden">
+            <a href="Main_Dashboard.html" class="w-8 h-8 rounded-full bg-gray-100 flex-shrink-0 flex items-center justify-center hover:bg-gray-200 transition text-gray-600 active:scale-95">
+                <i class="fa-solid fa-arrow-left"></i>
             </a>
-            <div>
-                <h1 class="font-heading text-lg font-bold text-gray-900 hidden md:block">แผนการสอน <span class="text-primary text-sm font-normal ml-2">จัดการเรียนรู้</span></h1>
+            <div class="min-w-0">
+                <!-- Subject Selector (Dynamic) -->
+                <div class="relative group">
+                    <select id="subject-selector" onchange="changeSubject()" class="font-heading font-bold text-gray-800 text-base sm:text-lg leading-tight bg-transparent outline-none cursor-pointer hover:text-blue-600 transition appearance-none pr-6 w-full truncate">
+                        <option value="com">วิชาคอมพิวเตอร์ ม.1 (ว21201)</option>
+                        <option value="math">วิชาคณิตศาสตร์ ม.2 (ค22101)</option>
+                        <option value="sci">วิชาวิทยาศาสตร์ ป.6 (ว16101)</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down absolute right-0 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none"></i>
+                </div>
+                <p class="text-xs text-gray-500 truncate" id="subject-desc">เทคโนโลยีวิทยาการคำนวณ</p>
             </div>
         </div>
-        <div class="flex items-center gap-3">
-            <div class="hidden sm:block text-xs text-gray-500 font-medium">ปีการศึกษาปัจจุบัน: 2567</div>
-            <button onclick="toggleAIModal()" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> <span class="hidden sm:inline">AI ร่างแผน</span>
+        <div class="flex items-center gap-2 flex-shrink-0">
+            <button onclick="toggleExportMode()" class="bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-bold hover:bg-gray-200 transition hidden sm:flex items-center">
+                <i class="fa-solid fa-file-export mr-1"></i> ส่งออก
+            </button>
+            <button onclick="toggleAIModal('plan')" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow hover:shadow-lg transition transform hover:scale-105 active:scale-95 flex items-center gap-1">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> <span class="hidden xs:inline">AI ร่างแผน</span><span class="xs:hidden">AI</span>
             </button>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto mt-24 px-4 md:px-8">
-
-        <!-- 1. Timeline (Course Progress) -->
-        <div class="mb-10">
-            <div class="flex justify-between items-end mb-4">
-                <h2 class="font-heading text-xl font-bold text-gray-800">เส้นทางเรียนรู้ (Learning Path)</h2>
-                <span class="text-xs text-gray-500">ความคืบหน้า: 40%</span>
+    <div class="max-w-6xl mx-auto px-4 no-print">
+        
+        <!-- Subject Stats Dashboard -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-book"></i></div>
+                <div><div class="text-xs text-gray-400">หน่วยการเรียนรู้</div><div class="font-bold text-lg text-gray-800" id="stat-units">8 หน่วย</div></div>
             </div>
-            
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 relative overflow-hidden">
-                <div class="timeline-container">
-                    <div class="timeline-line absolute w-full top-1/2"></div> <!-- Line -->
-                    <div class="flex justify-between relative min-w-[800px]">
-                        
-                        <!-- Unit 1 -->
-                        <div class="timeline-point completed flex flex-col items-center gap-3 w-32 cursor-pointer group">
-                            <div class="point-dot w-4 h-4 rounded-full bg-gray-300 border-2 border-white ring-2 ring-gray-100 group-hover:ring-blue-200 transition"></div>
-                            <div class="text-center">
-                                <p class="text-[10px] text-gray-400 font-bold uppercase">Week 1-4</p>
-                                <p class="text-xs font-bold text-gray-600 group-hover:text-primary">พื้นฐานคอมพิวเตอร์</p>
-                            </div>
-                        </div>
-
-                        <!-- Unit 2 -->
-                        <div class="timeline-point completed flex flex-col items-center gap-3 w-32 cursor-pointer group">
-                            <div class="point-dot w-4 h-4 rounded-full bg-gray-300 border-2 border-white ring-2 ring-gray-100 group-hover:ring-blue-200 transition"></div>
-                            <div class="text-center">
-                                <p class="text-[10px] text-gray-400 font-bold uppercase">Week 5-8</p>
-                                <p class="text-xs font-bold text-gray-600 group-hover:text-primary">การใช้งาน OS</p>
-                            </div>
-                        </div>
-
-                        <!-- Unit 3 (Active) -->
-                        <div class="timeline-point active flex flex-col items-center gap-3 w-32 cursor-pointer group">
-                            <div class="point-dot w-4 h-4 rounded-full bg-blue-500 border-2 border-white ring-2 ring-blue-200 animate-pulse"></div>
-                            <div class="text-center">
-                                <p class="text-[10px] text-primary font-bold uppercase">Current</p>
-                                <p class="text-xs font-bold text-primary">อัลกอริทึม</p>
-                            </div>
-                        </div>
-
-                        <!-- Unit 4 -->
-                        <div class="timeline-point flex flex-col items-center gap-3 w-32 cursor-pointer group">
-                            <div class="point-dot w-4 h-4 rounded-full bg-gray-200 border-2 border-white ring-2 ring-gray-50 group-hover:ring-gray-200 transition"></div>
-                            <div class="text-center">
-                                <p class="text-[10px] text-gray-400 font-bold uppercase">Week 13-16</p>
-                                <p class="text-xs font-bold text-gray-400">การเขียนโปรแกรม</p>
-                            </div>
-                        </div>
-
-                        <!-- Unit 5 -->
-                        <div class="timeline-point flex flex-col items-center gap-3 w-32 cursor-pointer group">
-                            <div class="point-dot w-4 h-4 rounded-full bg-gray-200 border-2 border-white ring-2 ring-gray-50 group-hover:ring-gray-200 transition"></div>
-                            <div class="text-center">
-                                <p class="text-[10px] text-gray-400 font-bold uppercase">Week 17-20</p>
-                                <p class="text-xs font-bold text-gray-400">โครงงาน</p>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-clock"></i></div>
+                <div><div class="text-xs text-gray-400">ชั่วโมงรวม</div><div class="font-bold text-lg text-gray-800" id="stat-hours">40 ชม.</div></div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-chart-pie"></i></div>
+                <div><div class="text-xs text-gray-400">ความคืบหน้า</div><div class="font-bold text-lg text-gray-800" id="stat-progress">45%</div></div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-file-pen"></i></div>
+                <div><div class="text-xs text-gray-400">บันทึกหลังสอน</div><div class="font-bold text-lg text-gray-800" id="stat-records">12/20</div></div>
             </div>
         </div>
 
-        <!-- 2. Lesson Plans Grid -->
-        <div id="plans-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
-            <!-- Plan Card 1 -->
-            <div class="plan-card bg-white rounded-2xl p-6 shadow-sm relative group" id="card-1">
-                <button onclick="requestDelete(this.closest('.plan-card'))" class="delete-btn absolute top-4 right-4 text-gray-300 hover:text-red-500 transition" title="ลบข้อมูล">
-                    <i class="fa-solid fa-trash-can"></i>
+        <!-- Dynamic Timeline -->
+        <div class="overflow-x-auto pb-4 mb-6 -mx-4 px-4 no-scrollbar timeline-container">
+            <div class="flex items-center gap-6 min-w-max px-2" id="timeline-content">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+
+        <!-- Plan Grid -->
+        <div id="plan-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <!-- Injected by JS -->
+        </div>
+
+        <!-- Export Action Bar -->
+        <div id="export-bar" class="fixed bottom-20 left-0 w-full px-4 hidden no-print z-40 transition-all duration-300 transform translate-y-20 opacity-0">
+            <div class="max-w-sm mx-auto bg-gray-900 text-white p-4 rounded-2xl shadow-xl flex justify-between items-center backdrop-blur-md bg-opacity-90">
+                <span class="text-sm font-bold"><span id="selected-count">0</span> รายการที่เลือก</span>
+                <button onclick="exportSelected()" class="bg-white text-gray-900 px-4 py-2 rounded-xl text-xs font-bold hover:bg-gray-100 active:scale-95 transition">
+                    <i class="fa-solid fa-print mr-1"></i> พิมพ์เอกสาร
                 </button>
-                <div class="flex justify-between items-start mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-check"></i>
-                    </div>
-                    <span class="status-badge status-done">สอนแล้ว</span>
-                </div>
-                <h3 class="font-heading font-bold text-lg text-gray-800 mb-1">หน่วยที่ 1: พื้นฐานคอมพิวเตอร์</h3>
-                <p class="text-xs text-gray-500 mb-4">องค์ประกอบฮาร์ดแวร์ ซอฟต์แวร์ และหลักการทำงานเบื้องต้น</p>
-                
-                <div class="border-t border-gray-100 pt-4 flex gap-3">
-                    <button class="flex-1 py-2 rounded-lg bg-gray-50 text-xs font-bold text-gray-600 hover:bg-red-50 hover:text-red-600 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-file-pdf"></i> แผนการสอน
-                    </button>
-                    <button onclick="openPostTeachModal('หน่วยที่ 1: พื้นฐานคอมพิวเตอร์')" class="flex-1 py-2 rounded-lg bg-blue-50 text-xs font-bold text-blue-600 hover:bg-blue-100 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-file-pen"></i> บันทึกหลังสอน
-                    </button>
-                </div>
             </div>
-
-            <!-- Plan Card 2 -->
-            <div class="plan-card bg-white rounded-2xl p-6 shadow-sm relative group" id="card-2">
-                <button onclick="requestDelete(this.closest('.plan-card'))" class="delete-btn absolute top-4 right-4 text-gray-300 hover:text-red-500 transition" title="ลบข้อมูล">
-                    <i class="fa-solid fa-trash-can"></i>
-                </button>
-                <div class="flex justify-between items-start mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-check"></i>
-                    </div>
-                    <span class="status-badge status-done">สอนแล้ว</span>
-                </div>
-                <h3 class="font-heading font-bold text-lg text-gray-800 mb-1">หน่วยที่ 2: การใช้งาน OS</h3>
-                <p class="text-xs text-gray-500 mb-4">การจัดการไฟล์ โฟลเดอร์ และการตั้งค่า Windows เบื้องต้น</p>
-                
-                <div class="border-t border-gray-100 pt-4 flex gap-3">
-                    <button class="flex-1 py-2 rounded-lg bg-gray-50 text-xs font-bold text-gray-600 hover:bg-red-50 hover:text-red-600 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-file-pdf"></i> แผนการสอน
-                    </button>
-                    <button onclick="openPostTeachModal('หน่วยที่ 2: การใช้งาน OS')" class="flex-1 py-2 rounded-lg bg-blue-50 text-xs font-bold text-blue-600 hover:bg-blue-100 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-file-pen"></i> บันทึกหลังสอน
-                    </button>
-                </div>
-            </div>
-
-            <!-- Plan Card 3 (Active) -->
-            <div class="plan-card bg-white rounded-2xl p-6 shadow-md border-2 border-blue-500 relative group" id="card-3">
-                <button onclick="requestDelete(this.closest('.plan-card'))" class="delete-btn absolute top-4 right-4 text-gray-300 hover:text-red-500 transition" title="ลบข้อมูล">
-                    <i class="fa-solid fa-trash-can"></i>
-                </button>
-                <div class="absolute top-0 right-0 bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-xl">NOW</div>
-                <div class="flex justify-between items-start mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl animate-pulse">
-                        <i class="fa-solid fa-chalkboard-user"></i>
-                    </div>
-                    <span class="status-badge status-active">กำลังสอน</span>
-                </div>
-                <h3 class="font-heading font-bold text-lg text-gray-800 mb-1">หน่วยที่ 3: อัลกอริทึม</h3>
-                <p class="text-xs text-gray-500 mb-4">การเขียนผังงาน (Flowchart) และการคิดเชิงตรรกะ</p>
-                
-                <div class="border-t border-gray-100 pt-4 flex gap-3">
-                    <button onclick="openPostTeachModal('หน่วยที่ 3: อัลกอริทึม')" class="flex-1 py-2 rounded-lg bg-blue-600 text-xs font-bold text-white hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-md">
-                        <i class="fa-solid fa-file-pen"></i> บันทึกหลังสอน
-                    </button>
-                    <button class="w-10 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition flex items-center justify-center">
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Add New Card -->
-            <div class="rounded-2xl border-2 border-dashed border-gray-300 p-6 flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:border-primary hover:text-primary hover:bg-blue-50/50 transition h-full min-h-[200px]" onclick="toggleAIModal()">
-                <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-2xl mb-3 group-hover:bg-white transition">
-                    <i class="fa-solid fa-plus"></i>
-                </div>
-                <h3 class="font-heading font-bold">เพิ่มแผนการสอนใหม่</h3>
-                <p class="text-xs mt-1">หรือนำเข้าจากไฟล์...</p>
-            </div>
-
         </div>
 
     </div>
 
-    <!-- 1. AI Modal (Updated with new fields) -->
-    <div id="ai-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
+    <!-- 1. Lesson Detail Modal (รวม แผน/ใบงาน/ข้อสอบ) -->
+    <div id="detail-modal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-0 sm:p-4">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="closeDetailModal()"></div>
+        <div class="bg-white w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-2xl sm:rounded-2xl shadow-2xl relative z-10 flex flex-col overflow-hidden transition-all">
+            
+            <div class="bg-white border-b px-6 py-4 flex justify-between items-center flex-shrink-0 safe-top-padding">
+                <div class="min-w-0 pr-4">
+                    <h3 class="font-heading font-bold text-lg sm:text-xl text-gray-800 truncate" id="modal-title">...</h3>
+                    <p class="text-xs text-gray-500 truncate" id="modal-subtitle">...</p>
+                </div>
+                <button onclick="closeDetailModal()" class="w-8 h-8 rounded-full bg-gray-100 flex-shrink-0 flex items-center justify-center hover:bg-gray-200 active:scale-90 transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Modal Tabs -->
+            <div class="flex border-b bg-gray-50 flex-shrink-0 overflow-x-auto no-scrollbar">
+                <button onclick="switchModalTab('tab-plan')" class="modal-tab active flex-1 py-3 px-4 text-sm font-bold text-gray-500 hover:bg-white transition whitespace-nowrap">แผนการสอน</button>
+                <button onclick="switchModalTab('tab-worksheet')" class="modal-tab flex-1 py-3 px-4 text-sm font-bold text-gray-500 hover:bg-white transition whitespace-nowrap">ใบงาน/ชิ้นงาน</button>
+                <button onclick="switchModalTab('tab-quiz')" class="modal-tab flex-1 py-3 px-4 text-sm font-bold text-gray-500 hover:bg-white transition whitespace-nowrap">วัดและประเมินผล</button>
+            </div>
+
+            <div class="p-6 overflow-y-auto bg-white flex-1 custom-scrollbar">
+                
+                <!-- Tab: Plan -->
+                <div id="tab-plan" class="tab-pane block space-y-4">
+                    <div class="p-4 bg-blue-50 rounded-xl border border-blue-100 text-sm text-blue-800 flex items-start gap-2">
+                        <i class="fa-solid fa-circle-info mt-1 flex-shrink-0"></i> 
+                        <div>
+                            <strong>สาระสำคัญ:</strong> <span id="detail-desc">...</span>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Suggestion Buttons -->
+                    <div class="flex gap-2 mb-2 flex-wrap">
+                        <button onclick="toggleAIModal('active-learning')" class="text-xs bg-pink-100 text-pink-600 px-3 py-1.5 rounded-lg font-bold hover:bg-pink-200 border border-pink-200 flex items-center gap-1 active:scale-95 transition">
+                            <i class="fa-solid fa-users-gear"></i> กิจกรรม Active Learning
+                        </button>
+                    </div>
+
+                    <div class="prose prose-sm max-w-none text-gray-600 border rounded-xl p-4 bg-gray-50/50">
+                        <p><strong>จุดประสงค์การเรียนรู้ (KPA):</strong></p>
+                        <ul><li>K: อธิบายหลักการได้</li><li>P: ปฏิบัติงานตามขั้นตอนได้</li><li>A: มีความรับผิดชอบ</li></ul>
+                        <p><strong>กิจกรรมการเรียนรู้:</strong> ขั้นนำ (10 นาที) -> ขั้นสอน (40 นาที) -> ขั้นสรุป (10 นาที)</p>
+                    </div>
+                </div>
+
+                <!-- Tab: Worksheet -->
+                <div id="tab-worksheet" class="tab-pane hidden space-y-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-bold text-gray-700">รายการใบงาน</h4>
+                        <button onclick="toggleAIModal('worksheet')" class="text-xs bg-orange-100 text-orange-600 px-3 py-1.5 rounded-lg font-bold hover:bg-orange-200 active:scale-95 transition"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> AI สร้างใบงาน</button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-xl hover:bg-gray-50 group cursor-pointer transition">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <div class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center text-red-500 flex-shrink-0"><i class="fa-solid fa-file-pdf"></i></div>
+                            <div class="min-w-0">
+                                <p class="text-sm font-bold text-gray-800 truncate">ใบงานที่ 1: แบบฝึกหัดทบทวน</p>
+                                <p class="text-xs text-gray-400">PDF • 1.2 MB</p>
+                            </div>
+                        </div>
+                        <button class="text-gray-400 hover:text-blue-600 group-hover:scale-110 transition p-2"><i class="fa-solid fa-download"></i></button>
+                    </div>
+                </div>
+
+                <!-- Tab: Quiz & Rubric -->
+                <div id="tab-quiz" class="tab-pane hidden space-y-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
+                        <h4 class="font-bold text-gray-700">เครื่องมือวัดผล</h4>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <button onclick="toggleAIModal('rubric')" class="flex-1 sm:flex-none text-xs bg-teal-100 text-teal-600 px-3 py-1.5 rounded-lg font-bold hover:bg-teal-200 text-center transition active:scale-95"><i class="fa-solid fa-table mr-1"></i> สร้าง Rubric</button>
+                            <button onclick="toggleAIModal('quiz')" class="flex-1 sm:flex-none text-xs bg-purple-100 text-purple-600 px-3 py-1.5 rounded-lg font-bold hover:bg-purple-200 text-center transition active:scale-95"><i class="fa-solid fa-clipboard-question mr-1"></i> ออกข้อสอบ</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border rounded-xl hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 flex-shrink-0"><i class="fa-solid fa-clipboard-question"></i></div>
+                            <div class="min-w-0"><p class="text-sm font-bold text-gray-800 truncate">Pre-test ก่อนเรียน</p><p class="text-xs text-gray-400">Google Form • 10 ข้อ</p></div>
+                        </div>
+                        <a href="#" class="text-blue-600 text-xs font-bold hover:underline flex-shrink-0">เปิดลิงก์ <i class="fa-solid fa-external-link-alt ml-1"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 border-t bg-gray-50 flex justify-end gap-2 flex-shrink-0 safe-bottom-padding">
+                <button onclick="openPostTeachFromDetail()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 shadow active:scale-95 transition w-full sm:w-auto"><i class="fa-solid fa-file-pen mr-2"></i>บันทึกหลังสอน</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. AI Generator Modal (Multipurpose) -->
+    <div id="ai-modal" class="fixed inset-0 z-[80] hidden flex items-center justify-center p-0 sm:p-4">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="toggleAIModal()"></div>
-        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl relative z-10 flex flex-col max-h-[85vh] overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-4 text-white flex justify-between items-center">
-                <h3 class="font-heading font-bold flex items-center gap-2"><i class="fa-solid fa-robot"></i> AI Lesson Planner ✨</h3>
-                <button onclick="toggleAIModal()" class="hover:bg-white/20 rounded-full p-1 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+        <div class="bg-white w-full h-full sm:h-auto sm:max-h-[85vh] sm:max-w-lg sm:rounded-2xl shadow-2xl relative z-10 flex flex-col overflow-hidden transition-all">
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 text-white flex justify-between items-center flex-shrink-0 safe-top-padding">
+                <h3 class="font-heading font-bold flex items-center gap-2"><i class="fa-solid fa-robot"></i> <span id="ai-modal-header">AI Generator</span></h3>
+                <button onclick="toggleAIModal()" class="hover:bg-white/20 rounded-full p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto">
-                <label class="block text-sm font-bold text-gray-700 mb-2 font-heading">วิชาที่ต้องการสอน</label>
-                <input type="text" id="ai-subject" class="w-full p-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none mb-3 font-body" placeholder="เช่น วิทยาการคำนวณ, คณิตศาสตร์...">
-
-                <label class="block text-sm font-bold text-gray-700 mb-2 font-heading">หัวข้อเรื่อง</label>
-                <input type="text" id="ai-topic" class="w-full p-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none mb-3 font-body" placeholder="เช่น การเขียนโปรแกรมด้วย Scratch">
-
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">ระดับชั้น</label>
-                        <select id="ai-grade" class="w-full p-2 rounded-lg border border-gray-200 text-sm">
-                            <option>ป.1</option><option>ป.2</option><option>ป.3</option>
-                            <option>ป.4</option><option>ป.5</option><option>ป.6</option>
-                            <option>ม.1</option><option>ม.2</option><option>ม.3</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">ปีการศึกษา</label>
-                        <select id="ai-year" class="w-full p-2 rounded-lg border border-gray-200 text-sm">
-                            <option>2566</option>
-                            <option selected>2567</option>
-                            <option>2568</option>
-                            <option>2569</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-xs font-bold text-gray-500 mb-1">จำนวนชั่วโมง (คาบเรียน)</label>
-                    <input type="number" id="ai-hours" value="1" min="1" class="w-full p-2 rounded-lg border border-gray-200 text-sm text-center">
-                </div>
+            <div class="p-6 overflow-y-auto space-y-4 flex-1 custom-scrollbar">
+                <input type="hidden" id="ai-mode" value="plan">
                 
-                <button onclick="generatePlan()" id="btn-gen" class="w-full bg-gray-900 text-white py-3 rounded-xl font-bold text-sm shadow-md hover:bg-black transition flex justify-center items-center gap-2">
-                    <i class="fa-solid fa-bolt text-yellow-400"></i> สร้างแผนการสอนอัตโนมัติ
+                <p class="text-sm text-gray-600" id="ai-desc">กรุณาระบุรายละเอียดเพื่อให้ AI ช่วยทำงาน</p>
+                <textarea id="ai-prompt" rows="3" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="เช่น เรื่องระบบสุริยะ..."></textarea>
+                
+                <button onclick="runAIGenerator()" id="btn-gen-ai" class="w-full bg-gray-900 text-white py-3 rounded-xl font-bold text-sm shadow hover:bg-black transition flex justify-center items-center gap-2 active:scale-95">
+                    <i class="fa-solid fa-bolt text-yellow-400"></i> สร้างเนื้อหา
                 </button>
                 
-                <div id="ai-result" class="mt-6 text-sm text-gray-700 bg-blue-50 p-4 rounded-xl hidden border border-blue-100 prose prose-sm max-w-none max-h-60 overflow-y-auto"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. Post-Teaching Record Modal -->
-    <div id="post-teach-modal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closePostTeachModal()"></div>
-        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl relative z-10 flex flex-col overflow-hidden">
-            <div class="bg-blue-600 p-4 text-white flex justify-between items-center">
-                <h3 class="font-heading font-bold"><i class="fa-solid fa-file-pen mr-2"></i> บันทึกหลังการสอน</h3>
-                <button onclick="closePostTeachModal()"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-6">
-                <p id="post-teach-title" class="text-sm text-gray-500 mb-3 font-bold">หน่วยการเรียนรู้: ...</p>
-                <label class="block text-xs font-bold text-gray-600 mb-1">ผลการจัดการเรียนรู้ / ปัญหา / ข้อเสนอแนะ</label>
-                <textarea id="post-teach-note" rows="5" class="w-full p-3 border rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none text-sm" placeholder="พิมพ์บันทึกข้อความที่นี่..."></textarea>
-                <div class="mt-4 flex justify-end gap-2">
-                    <button onclick="closePostTeachModal()" class="px-4 py-2 text-gray-500 text-sm hover:bg-gray-100 rounded-lg">ยกเลิก</button>
-                    <button onclick="savePostTeach()" class="px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold shadow hover:bg-blue-700">บันทึก</button>
+                <div id="ai-result-wrapper" class="hidden flex-col h-full mt-4">
+                    <div id="ai-result-area" class="text-sm text-gray-700 bg-indigo-50 p-4 rounded-t-xl border border-indigo-100 prose prose-sm max-w-none flex-1 overflow-y-auto max-h-60 custom-scrollbar"></div>
+                    <div class="bg-indigo-100 p-2 rounded-b-xl flex justify-end gap-2 border-x border-b border-indigo-100">
+                        <button onclick="copyToClipboard()" class="text-xs bg-white text-indigo-600 px-3 py-1.5 rounded-lg border border-indigo-200 font-bold hover:bg-indigo-50 active:scale-95"><i class="fa-regular fa-copy mr-1"></i> คัดลอก</button>
+                        <button onclick="downloadAsFile()" class="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 shadow-sm active:scale-95"><i class="fa-solid fa-download mr-1"></i> ดาวน์โหลด</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 3. Security Delete Modal -->
-    <div id="delete-modal" class="fixed inset-0 z-[80] hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-red-900/20 backdrop-blur-sm"></div>
-        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl relative z-10 p-6 text-center border-2 border-red-100">
-            <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                <i class="fa-solid fa-triangle-exclamation"></i>
+    <!-- 3. Post-Teaching Modal -->
+    <div id="post-teach-modal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-0 sm:p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closePostTeach()"></div>
+        <div class="bg-white w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-lg sm:rounded-2xl shadow-2xl relative z-10 flex flex-col overflow-hidden">
+            <div class="bg-blue-600 p-4 text-white flex justify-between items-center flex-shrink-0 safe-top-padding">
+                <h3 class="font-heading font-bold flex items-center gap-2"><i class="fa-solid fa-file-pen"></i> บันทึกหลังการสอน</h3>
+                <button onclick="closePostTeach()" class="hover:bg-white/20 rounded-full p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <h3 class="font-heading font-bold text-xl text-gray-800">ยืนยันการลบข้อมูล?</h3>
-            <p class="text-sm text-gray-500 mt-1 mb-4">กรุณาใส่รหัสผ่านเพื่อยืนยันการทำรายการนี้</p>
-            
-            <input type="password" id="del-password" class="w-full p-3 border border-gray-300 rounded-xl text-center mb-4 focus:ring-2 focus:ring-red-500 outline-none" placeholder="รหัสผ่าน (Password)">
-            
-            <div class="flex gap-2">
-                <button onclick="closeDeleteModal()" class="flex-1 py-2 bg-gray-100 text-gray-700 rounded-xl font-bold">ยกเลิก</button>
-                <button onclick="confirmDelete()" class="flex-1 py-2 bg-red-600 text-white rounded-xl font-bold shadow-lg hover:bg-red-700">ลบทันที</button>
+            <div class="p-6 overflow-y-auto space-y-4 flex-1 custom-scrollbar">
+                <p class="text-sm text-gray-500 font-bold" id="post-teach-title">...</p>
+                
+                <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-start gap-3">
+                    <div class="text-blue-500 text-lg mt-1"><i class="fa-solid fa-robot"></i></div>
+                    <div class="flex-1">
+                        <p class="text-xs text-blue-800 font-bold mb-1">AI Auto-Summarize</p>
+                        <p class="text-xs text-blue-600 mb-2">ให้ AI ช่วยสรุปบันทึกหลังสอนจากผลลัพธ์ห้องเรียนสมมติ</p>
+                        <button onclick="generatePostTeachAI()" id="btn-ai-post" class="bg-white text-blue-600 border border-blue-200 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-50 active:scale-95 transition">เริ่มเขียนให้หน่อย</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">1. ผลการจัดการเรียนรู้</label>
+                    <textarea id="post-result" rows="3" class="w-full p-3 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">2. ปัญหาและอุปสรรค</label>
+                    <textarea id="post-problem" rows="2" class="w-full p-3 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">3. ข้อเสนอแนะ / แนวทางแก้ไข</label>
+                    <textarea id="post-suggestion" rows="2" class="w-full p-3 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                </div>
+            </div>
+            <div class="p-4 border-t bg-gray-50 flex gap-2 flex-shrink-0 safe-bottom-padding">
+                <button onclick="closePostTeach()" class="flex-1 py-2 bg-gray-100 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-200 active:scale-95 transition">ยกเลิก</button>
+                <button onclick="savePostTeach()" class="flex-1 py-2 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 active:scale-95 transition">บันทึก</button>
             </div>
         </div>
     </div>
+
+    <!-- Hidden Print Template -->
+    <div id="print-area" class="hidden">
+        <div class="text-center mb-8">
+            <h1 class="text-xl font-bold">บันทึกข้อความ</h1>
+            <p>ส่วนราชการ โรงเรียนเทศบาล ๑ บ้านกลาง</p>
+            <p>เรื่อง รายงานผลการจัดการเรียนรู้และแผนการสอน</p>
+        </div>
+        <div id="print-content" class="text-sm leading-relaxed space-y-4 font-body text-black"></div>
+        <div class="mt-16 flex justify-end text-center">
+            <div>
+                <p>ลงชื่อ .......................................................</p>
+                <p>(นายเอกอาวุธ สุริยะเจริญ)</p>
+                <p>ครูผู้สอน</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-xl border-t border-gray-200 px-4 py-2 md:hidden z-50 rounded-t-2xl shadow-[0_-5px_15px_rgba(0,0,0,0.05)] no-print pb-safe">
+        <div class="relative flex justify-between items-center max-w-sm mx-auto">
+            <div id="nav-pill" class="absolute top-1/2 -translate-y-1/2 h-10 w-12 bg-blue-50 rounded-xl transition-all duration-300 ease-out -z-10"></div>
+            <a href="Main_Dashboard.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="0"><i class="fa-solid fa-house text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">หน้าหลัก</span></a>
+            <a href="LessonPlan_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400 active-nav" data-index="1"><i class="fa-solid fa-book-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">แผนการ</span></a>
+            <a href="Classroom_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="2"><i class="fa-solid fa-users text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ชั้นเรียน</span></a>
+            <a href="Project_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="3"><i class="fa-solid fa-folder-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">โครงการ</span></a>
+            <a href="TeacherPortfolio_BentoGrid.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="4"><i class="fa-solid fa-user text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ข้อมูล</span></a>
+        </div>
+    </nav>
 
     <script>
-        // --- AI Modal Logic ---
-        function toggleAIModal() { document.getElementById('ai-modal').classList.toggle('hidden'); }
+        // Mock Data: Subjects & Plans
+        const subjectsData = {
+            'com': {
+                name: 'คอมพิวเตอร์ ม.1',
+                stats: { unit: '8 หน่วย', hour: '40 ชม.', progress: '45%', record: '12/20' },
+                timeline: [
+                    { name: 'บทที่ 1', color: 'bg-green-500' }, { name: 'บทที่ 2', color: 'bg-green-500' }, 
+                    { name: 'บทที่ 3', color: 'bg-blue-500 animate-pulse' }, { name: 'บทที่ 4', color: 'bg-gray-300' }
+                ],
+                plans: [
+                    { id: 1, title: 'หน่วยที่ 1: พื้นฐานคอมพิวเตอร์', hours: 2, status: 'done', desc: 'องค์ประกอบ ฮาร์ดแวร์ ซอฟต์แวร์ และหลักการทำงาน' },
+                    { id: 2, title: 'หน่วยที่ 2: การเขียนโปรแกรม', hours: 4, status: 'active', desc: 'อัลกอริทึม ผังงาน Flowchart และ Scratch เบื้องต้น' }
+                ]
+            },
+            'math': {
+                name: 'คณิตศาสตร์ ม.2',
+                stats: { unit: '10 หน่วย', hour: '60 ชม.', progress: '20%', record: '5/30' },
+                timeline: [{ name: 'บทที่ 1', color: 'bg-green-500' }, { name: 'บทที่ 2', color: 'bg-blue-500' }],
+                plans: [{ id: 101, title: 'หน่วยที่ 1: เลขยกกำลัง', hours: 3, status: 'done', desc: 'ความหมายและการคูณหารเลขยกกำลัง' }]
+            },
+            'sci': {
+                name: 'วิทยาศาสตร์ ป.6',
+                stats: { unit: '6 หน่วย', hour: '80 ชม.', progress: '60%', record: '20/40' },
+                timeline: [{ name: 'บทที่ 1', color: 'bg-green-500' }],
+                plans: [{ id: 201, title: 'หน่วยที่ 1: ร่างกายมนุษย์', hours: 4, status: 'done', desc: 'ระบบย่อยอาหารและการหายใจ' }]
+            }
+        };
 
-        async function generatePlan() {
-            const subject = document.getElementById('ai-subject').value;
-            const topic = document.getElementById('ai-topic').value;
-            const grade = document.getElementById('ai-grade').value;
-            const year = document.getElementById('ai-year').value;
-            const hours = document.getElementById('ai-hours').value;
-            const resDiv = document.getElementById('ai-result');
-            const btn = document.getElementById('btn-gen');
+        let currentSubject = 'com';
+        const apiKey = ""; 
+
+        // --- Core Functions ---
+        function init() {
+            renderSubjectData('com');
+            initNav();
+        }
+
+        function changeSubject() {
+            const val = document.getElementById('subject-selector').value;
+            currentSubject = val;
+            renderSubjectData(val);
+        }
+
+        function renderSubjectData(key) {
+            const data = subjectsData[key];
+            // Update Stats
+            document.getElementById('stat-units').textContent = data.stats.unit;
+            document.getElementById('stat-hours').textContent = data.stats.hour;
+            document.getElementById('stat-progress').textContent = data.stats.progress;
+            document.getElementById('stat-records').textContent = data.stats.record;
+            document.getElementById('subject-desc').textContent = data.name;
+
+            // Render Timeline
+            const tl = document.getElementById('timeline-content');
+            tl.innerHTML = data.timeline.map((t, i) => `
+                <div class="flex flex-col items-center gap-2 min-w-[60px]"><div class="w-3 h-3 rounded-full ${t.color}"></div><span class="text-[10px] font-bold text-gray-500 whitespace-nowrap">${t.name}</span></div>
+                ${i < data.timeline.length - 1 ? '<div class="h-0.5 w-8 sm:w-12 bg-gray-200 rounded-full"></div>' : ''}
+            `).join('');
+
+            // Render Cards
+            const grid = document.getElementById('plan-grid');
+            grid.innerHTML = data.plans.map(p => {
+                let statusBadge = p.status === 'done' 
+                    ? '<span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-check"></i> สอนแล้ว</span>' 
+                    : '<span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-spinner animate-spin"></i> กำลังสอน</span>';
+                
+                let borderColor = p.status === 'active' ? 'border-2 border-blue-500 shadow-md' : 'border border-gray-100 shadow-sm';
+
+                return `
+                <div class="bg-white p-6 rounded-2xl ${borderColor} relative group hover:shadow-lg hover:-translate-y-1 transition">
+                    <input type="checkbox" class="plan-checkbox absolute top-4 right-4 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 hidden export-toggle" value="${p.title}">
+                    <div class="flex justify-between mb-4">
+                        ${statusBadge}
+                        <span class="text-xs text-gray-400 font-mono">${p.hours} ชม.</span>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg text-gray-800 mb-1">${p.title}</h3>
+                    <p class="text-xs text-gray-500 mb-4 line-clamp-2">${p.desc}</p>
+                    <div class="grid grid-cols-2 gap-2 mt-auto">
+                        <button onclick="openDetailModal('${p.title}', '${p.desc}')" class="py-2 bg-gray-50 text-gray-600 rounded-lg text-xs font-bold hover:bg-gray-100 transition active:scale-95">ดูรายละเอียด</button>
+                        <button onclick="openPostTeach('${p.title}')" class="py-2 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-100 transition active:scale-95">บันทึกผล</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // --- Detail Modal ---
+        function openDetailModal(title, desc) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-subtitle').textContent = subjectsData[currentSubject].name;
+            document.getElementById('detail-desc').textContent = desc;
+            document.getElementById('detail-modal').classList.remove('hidden');
+            switchModalTab('tab-plan');
+        }
+        function closeDetailModal() { document.getElementById('detail-modal').classList.add('hidden'); }
+        function switchModalTab(tabId) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.modal-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.remove('hidden');
+            event.target.classList.add('active');
+        }
+
+        // --- Export Logic ---
+        function toggleExportMode() {
+            const bar = document.getElementById('export-bar');
+            const checks = document.querySelectorAll('.export-toggle');
+            bar.classList.toggle('hidden');
+            bar.classList.toggle('translate-y-20');
+            bar.classList.toggle('opacity-0');
+            checks.forEach(c => c.classList.toggle('hidden'));
+        }
+        function exportSelected() {
+            const selected = Array.from(document.querySelectorAll('.plan-checkbox:checked')).map(c => c.value);
+            if(selected.length === 0) { alert('กรุณาเลือกแผนการสอนอย่างน้อย 1 แผน'); return; }
             
-            if(!topic || !subject) { alert("กรุณาระบุวิชาและหัวข้อครับ"); return; }
+            let html = `<h3 class="font-bold mb-4 text-lg">สรุปแผนการจัดการเรียนรู้ที่เลือก</h3><ul>`;
+            selected.forEach(s => html += `<li class="mb-2 border-b pb-2">• ${s}</li>`);
+            html += `</ul>`;
             
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> กำลังเขียนแผน...';
+            document.getElementById('print-content').innerHTML = html;
+            window.print();
+        }
+
+        // --- Post Teaching & AI ---
+        function openPostTeach(title) { document.getElementById('post-teach-title').textContent = title; document.getElementById('post-teach-modal').classList.remove('hidden'); }
+        function openPostTeachFromDetail() { closeDetailModal(); document.getElementById('post-teach-modal').classList.remove('hidden'); }
+        function closePostTeach() { document.getElementById('post-teach-modal').classList.add('hidden'); }
+        function savePostTeach() { alert('บันทึกเรียบร้อย'); closePostTeach(); }
+
+        async function generatePostTeachAI() {
+            const btn = document.getElementById('btn-ai-post');
+            const res1 = document.getElementById('post-result');
+            const res2 = document.getElementById('post-problem');
+            const res3 = document.getElementById('post-suggestion');
+            
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> กำลังคิด...';
+            
+            // Mock AI Response for speed
+            setTimeout(() => {
+                res1.value = "นักเรียนร้อยละ 85 เข้าใจเนื้อหาและปฏิบัติกิจกรรมได้ตามวัตถุประสงค์";
+                res2.value = "อุปกรณ์คอมพิวเตอร์บางเครื่องประมวลผลช้า ทำให้กิจกรรมล่าช้าเล็กน้อย";
+                res3.value = "ควรตรวจสอบความพร้อมของอุปกรณ์ก่อนเริ่มเรียน หรือเตรียมกิจกรรมสำรองแบบ Unplugged";
+                btn.innerHTML = 'เสร็จเรียบร้อย';
+            }, 1500);
+        }
+
+        // --- AI Generator Logic ---
+        function toggleAIModal(mode) {
+            const modal = document.getElementById('ai-modal');
+            const title = document.getElementById('ai-modal-header');
+            const desc = document.getElementById('ai-desc');
+            const input = document.getElementById('ai-mode');
+            const resWrapper = document.getElementById('ai-result-wrapper');
+            const resArea = document.getElementById('ai-result-area');
+            const promptInput = document.getElementById('ai-prompt');
+            const btn = document.getElementById('btn-gen-ai');
+            
+            resWrapper.classList.add('hidden');
+            resArea.innerHTML = '';
+            promptInput.value = '';
+            btn.innerHTML = '<i class="fa-solid fa-bolt text-yellow-400"></i> สร้างเนื้อหา';
+            btn.disabled = false;
+
+            if (mode) {
+                input.value = mode;
+                if(mode === 'plan') { title.innerHTML = 'AI Lesson Planner'; desc.textContent = 'ระบุวิชาและหัวข้อ เพื่อร่างแผนการสอน'; }
+                else if(mode === 'worksheet') { title.innerHTML = 'AI Worksheet Creator'; desc.textContent = 'ระบุหัวข้อใบงานที่ต้องการสร้าง'; }
+                else if(mode === 'quiz') { title.innerHTML = 'AI Quiz Generator'; desc.textContent = 'ระบุเรื่องและจำนวนข้อสอบ'; }
+                else if(mode === 'rubric') { title.innerHTML = 'AI Rubric Generator'; desc.textContent = 'ระบุหัวข้อที่ต้องการประเมิน (เช่น ชิ้นงานโปรแกรม)'; }
+                else if(mode === 'active-learning') { title.innerHTML = 'AI Active Learning'; desc.textContent = 'ระบุหัวข้อที่สอน เพื่อขอไอเดียกิจกรรม'; }
+            }
+            modal.classList.toggle('hidden');
+        }
+
+        async function runAIGenerator() {
+            const promptInput = document.getElementById('ai-prompt').value;
+            const mode = document.getElementById('ai-mode').value;
+            const resArea = document.getElementById('ai-result-area');
+            const resWrapper = document.getElementById('ai-result-wrapper');
+            const btn = document.getElementById('btn-gen-ai');
+
+            if(!promptInput) return;
+
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> กำลังสร้างเนื้อหา...';
             btn.disabled = true;
-            resDiv.classList.remove('hidden');
-            resDiv.innerHTML = '<p class="text-center text-gray-500">AI กำลังวิเคราะห์หลักสูตรและกิจกรรมการเรียนรู้...</p>';
+            resWrapper.classList.remove('hidden');
+            resArea.innerHTML = '<p class="text-center text-gray-500">AI กำลังทำงาน...</p>';
 
-            const apiKey = ""; 
-            const prompt = `เขียนแผนการสอนวิชา ${subject} เรื่อง "${topic}" สำหรับนักเรียนชั้น ${grade} ปีการศึกษา ${year} เวลา ${hours} ชั่วโมง ให้มีหัวข้อ: 1.สาระสำคัญ 2.จุดประสงค์ (K,P,A) 3.กิจกรรมการเรียนรู้ (ขั้นนำ, สอน, สรุป) 4.การวัดผลประเมินผล ใช้รูปแบบ Markdown ภาษาไทย`;
+            let systemPrompt = "";
+            if(mode === 'plan') systemPrompt = "เขียนแผนการสอนละเอียด มีหัวข้อ: สาระ, จุดประสงค์ KPA, กิจกรรม (นำ-สอน-สรุป), สื่อ, วัดผล";
+            else if(mode === 'worksheet') systemPrompt = "สร้างเนื้อหาใบงานสำหรับนักเรียน มีคำชี้แจง และโจทย์/คำถาม 5 ข้อ";
+            else if(mode === 'quiz') systemPrompt = "ออกข้อสอบปรนัย 5 ข้อ พร้อมเฉลย";
+            else if(mode === 'rubric') systemPrompt = "สร้างตาราง Rubric (เกณฑ์การให้คะแนน) 4 ระดับ (ดีมาก/ดี/พอใช้/ปรับปรุง)";
+            else if(mode === 'active-learning') systemPrompt = "แนะนำกิจกรรม Active Learning ที่สนุกและทำได้จริงในห้องเรียน 3 ไอเดีย";
 
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: promptInput }] }], systemInstruction: { parts: [{ text: systemPrompt }] } })
                 });
                 const data = await response.json();
                 const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Error";
-                resDiv.innerHTML = marked.parse(text);
-            } catch (e) { resDiv.textContent = "Error connecting to AI"; }
-            
-            btn.innerHTML = 'สร้างแผนการสอนอัตโนมัติ';
+                resArea.innerHTML = marked.parse(text);
+            } catch(e) { resArea.textContent = "AI Error"; }
+
+            btn.innerHTML = '<i class="fa-solid fa-bolt text-yellow-400"></i> สร้างเนื้อหา';
             btn.disabled = false;
         }
 
-        // --- Post Teaching Record Logic ---
-        function openPostTeachModal(title) {
-            document.getElementById('post-teach-title').textContent = `หน่วยการเรียนรู้: ${title}`;
-            document.getElementById('post-teach-note').value = ''; // Clear old text
-            document.getElementById('post-teach-modal').classList.remove('hidden');
+        function copyToClipboard() {
+            const text = document.getElementById('ai-result-area').innerText;
+            navigator.clipboard.writeText(text).then(() => alert("คัดลอกเรียบร้อย!"));
         }
 
-        function closePostTeachModal() {
-            document.getElementById('post-teach-modal').classList.add('hidden');
+        function downloadAsFile() {
+            const text = document.getElementById('ai-result-area').innerText;
+            const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+            const anchor = document.createElement("a");
+            anchor.href = URL.createObjectURL(blob);
+            anchor.download = "lesson-plan-ai.txt";
+            anchor.click();
         }
 
-        function savePostTeach() {
-            const note = document.getElementById('post-teach-note').value;
-            if(!note.trim()) { alert("กรุณาพิมพ์บันทึกก่อนครับ"); return; }
-            alert("บันทึกข้อมูลเรียบร้อยแล้ว!");
-            closePostTeachModal();
+        // Nav Init
+        function initNav() {
+            const pill = document.getElementById('nav-pill');
+            const activeLink = document.querySelector('.active-nav');
+            if(activeLink) { pill.style.left = activeLink.offsetLeft + 'px'; pill.style.width = activeLink.offsetWidth + 'px'; }
         }
-
-        // --- Security Delete Logic ---
-        let elementToDelete = null;
-
-        function requestDelete(element) {
-            elementToDelete = element;
-            document.getElementById('del-password').value = ''; // Reset password field
-            document.getElementById('delete-modal').classList.remove('hidden');
-        }
-
-        function closeDeleteModal() {
-            document.getElementById('delete-modal').classList.add('hidden');
-            elementToDelete = null;
-        }
-
-        function confirmDelete() {
-            const pass = document.getElementById('del-password').value;
-            if (pass === 'Aekarwut') {
-                if (elementToDelete) {
-                    elementToDelete.style.transition = 'all 0.5s';
-                    elementToDelete.style.opacity = '0';
-                    elementToDelete.style.transform = 'scale(0.9)';
-                    setTimeout(() => elementToDelete.remove(), 500);
-                }
-                closeDeleteModal();
-            } else {
-                alert('รหัสผ่านไม่ถูกต้อง! กรุณาลองใหม่');
-                document.getElementById('del-password').value = '';
-                document.getElementById('del-password').focus();
-            }
-        }
+        window.addEventListener('load', initNav); window.addEventListener('resize', initNav);
+        
+        init();
     </script>
 </body>
 </html>

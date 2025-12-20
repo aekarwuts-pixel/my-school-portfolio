@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJBKDWWT2P"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QJBKDWWT2P');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Activity Manager - กิจกรรมพัฒนาผู้เรียน</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { heading: ['Prompt', 'sans-serif'], body: ['Sarabun', 'sans-serif'] },
+                    colors: { 'primary': '#0071e3', 'bg-gray': '#F5F5F7' },
+                    animation: { 'pulse-slow': 'pulse 3s infinite' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #F5F5F7; font-family: 'Prompt', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .nav-icon { transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        .active-nav .nav-icon { transform: translateY(-5px); color: #0071e3; }
+        .active-nav span { color: #0071e3; font-weight: 600; }
+        
+        .tab-btn { border-bottom: 2px solid transparent; color: #6b7280; transition: all 0.3s; }
+        .tab-btn.active { color: #0071e3; border-bottom: 2px solid #0071e3; background-color: #eff6ff; }
+        
+        /* Checkbox Toggle */
+        .toggle-checkbox:checked { right: 0; border-color: #10b981; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #10b981; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* Loading Animation */
+        .loading-dots:after { content: ' .'; animation: dots 1s steps(5, end) infinite; }
+        @keyframes dots { 0%, 20% { color: rgba(0,0,0,0); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);} 40% { color: #333; text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);} 60% { text-shadow: .25em 0 0 #333, .5em 0 0 rgba(0,0,0,0);} 80%, 100% { text-shadow: .25em 0 0 #333, .5em 0 0 #333;}}
+    </style>
+</head>
+<body class="pb-28 pt-20">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur z-40 px-4 py-3 flex justify-between items-center h-16 border-b shadow-sm">
+        <div class="flex items-center gap-3">
+            <a href="Main_Dashboard.html" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-gray-600"><i class="fa-solid fa-arrow-left"></i></a>
+            <div>
+                <h1 class="font-heading font-bold text-gray-800 text-lg leading-tight hidden sm:block">กิจกรรมพัฒนาผู้เรียน</h1>
+                <h1 class="font-heading font-bold text-gray-800 text-lg leading-tight sm:hidden">กิจกรรม</h1>
+            </div>
+        </div>
+        <button onclick="toggleAIModal('general')" class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow hover:shadow-lg transition transform hover:scale-105 flex items-center gap-1">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> <span class="hidden sm:inline">AI คิดกิจกรรม</span>
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto px-4">
+
+        <!-- 1. Stats Dashboard -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-gray-400 font-bold uppercase">เวลาเรียนรวม</p>
+                    <h3 class="text-2xl font-bold text-gray-800">32 <span class="text-sm font-normal text-gray-400">ชม.</span></h3>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-clock"></i></div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-gray-400 font-bold uppercase">ผ่านกิจกรรม</p>
+                    <h3 class="text-2xl font-bold text-green-600">95%</h3>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center"><i class="fa-solid fa-check-circle"></i></div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-gray-400 font-bold uppercase">ชุมนุม</p>
+                    <h3 class="text-xl font-bold text-purple-600 truncate">คอมพิวเตอร์</h3>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center"><i class="fa-solid fa-users-rectangle"></i></div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-gray-400 font-bold uppercase">ลูกเสือ</p>
+                    <h3 class="text-xl font-bold text-orange-600">กองร้อยที่ 1</h3>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center"><i class="fa-solid fa-campground"></i></div>
+            </div>
+        </div>
+
+        <!-- 2. Tabs -->
+        <div class="flex border-b border-gray-200 mb-6 bg-white rounded-t-xl overflow-hidden shadow-sm overflow-x-auto no-scrollbar">
+            <button onclick="switchTab('scout')" id="tab-scout" class="tab-btn active flex-1 py-3 px-4 font-bold text-sm whitespace-nowrap"><i class="fa-solid fa-campground mr-2"></i>ลูกเสือ/เนตรนารี</button>
+            <button onclick="switchTab('club')" id="tab-club" class="tab-btn flex-1 py-3 px-4 font-bold text-sm whitespace-nowrap"><i class="fa-solid fa-users mr-2"></i>ชุมนุม</button>
+            <button onclick="switchTab('social')" id="tab-social" class="tab-btn flex-1 py-3 px-4 font-bold text-sm whitespace-nowrap"><i class="fa-solid fa-hand-holding-heart mr-2"></i>เพื่อสังคม</button>
+        </div>
+
+        <!-- 3. Tab Content -->
+        
+        <!-- SCOUT TAB -->
+        <div id="content-scout" class="space-y-6">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-bold text-lg text-gray-800 flex items-center gap-2"><i class="fa-solid fa-clipboard-check text-orange-500"></i> บันทึกการเปิดกอง</h3>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded text-gray-500" id="scout-date">--/--/----</span>
+                    </div>
+                    <!-- AI Scout Game -->
+                    <button onclick="toggleAIModal('game')" class="text-xs bg-orange-100 text-orange-700 px-3 py-1.5 rounded-full font-bold hover:bg-orange-200 transition flex items-center gap-1">
+                        <i class="fa-solid fa-dice"></i> AI แนะนำเกม/เพลง
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 pb-4 border-b border-gray-100">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">ระดับชั้นเรียน</label>
+                        <select class="w-full p-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-orange-500 outline-none bg-white">
+                            <option>-- เลือกระดับชั้น --</option>
+                            <option>ป.1 (สำรอง)</option>
+                            <option>ป.2 (สำรอง)</option>
+                            <option>ป.3 (สำรอง)</option>
+                            <option>ป.4 (สามัญ)</option>
+                            <option>ป.5 (สามัญ)</option>
+                            <option>ป.6 (สามัญ)</option>
+                            <option>ม.1 (สามัญรุ่นใหญ่)</option>
+                            <option>ม.2 (สามัญรุ่นใหญ่)</option>
+                            <option>ม.3 (สามัญรุ่นใหญ่)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">สังกัด กอง/หมู่</label>
+                        <input type="text" class="w-full p-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-orange-500 outline-none" placeholder="เช่น กองที่ 1 หมู่สิงโต">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">จำนวนผู้เข้าร่วม</label>
+                        <input type="number" class="w-full p-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-orange-500 outline-none" placeholder="0">
+                    </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                        <span class="text-sm font-bold text-gray-700">1. ตรวจเครื่องแต่งกาย</span>
+                        <div class="flex gap-2">
+                            <button class="w-8 h-8 rounded-full bg-white border border-gray-200 text-green-500 hover:bg-green-50"><i class="fa-solid fa-check"></i></button>
+                            <button class="w-8 h-8 rounded-full bg-white border border-gray-200 text-red-500 hover:bg-red-50"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                        <span class="text-sm font-bold text-gray-700">2. พิธีการ (เคารพธงชาติ/สวดมนต์)</span>
+                        <div class="flex gap-2">
+                            <button class="w-8 h-8 rounded-full bg-white border border-gray-200 text-green-500 hover:bg-green-50"><i class="fa-solid fa-check"></i></button>
+                            <button class="w-8 h-8 rounded-full bg-white border border-gray-200 text-red-500 hover:bg-red-50"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                        <span class="text-sm font-bold text-gray-700">3. กิจกรรมนันทนาการ</span>
+                         <div class="flex gap-2">
+                            <button class="w-8 h-8 rounded-full bg-white border border-gray-200 text-green-500 hover:bg-green-50"><i class="fa-solid fa-check"></i></button>
+                            <button class="w-8 h-8 rounded-full bg-white border border-gray-200 text-red-500 hover:bg-red-50"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Log Writer -->
+                <div class="mt-4">
+                    <label class="text-xs font-bold text-gray-500 flex justify-between items-center mb-1">
+                        บันทึกเพิ่มเติม
+                        <button onclick="aiWriteLog()" id="btn-ai-log" class="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded hover:bg-blue-200 transition"><i class="fa-solid fa-pen-nib"></i> AI ช่วยเขียน</button>
+                    </label>
+                    <textarea id="scout-note" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white outline-none focus:border-orange-500 transition" placeholder="พิมพ์คำสั้นๆ เช่น เรียบร้อยดี, สนุกสนาน, ลมแรง... แล้วกด AI ช่วยเขียน"></textarea>
+                </div>
+                
+                <button class="w-full mt-4 bg-orange-600 text-white py-2 rounded-xl font-bold hover:bg-orange-700 shadow">บันทึกผลการเรียน</button>
+            </div>
+        </div>
+
+        <!-- CLUB TAB -->
+        <div id="content-club" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-lg text-gray-800">ชุมนุมคอมพิวเตอร์สร้างสรรค์</h3>
+                <div class="flex gap-2">
+                    <span class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-bold flex items-center" id="club-count">สมาชิก 2 คน</span>
+                    <button onclick="openAddMemberModal()" class="text-xs bg-primary text-white px-3 py-1 rounded-full font-bold hover:bg-blue-600 transition flex items-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-user-plus"></i> เพิ่มสมาชิก
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Member List -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left whitespace-nowrap">
+                        <thead class="bg-purple-50 text-purple-800 font-bold">
+                            <tr><th class="p-4">ชื่อ-สกุล</th><th class="p-4 text-center">มา</th><th class="p-4 text-center">ขาด</th><th class="p-4 text-center">ผล</th></tr>
+                        </thead>
+                        <tbody id="club-list" class="divide-y divide-gray-100">
+                            <!-- JS will populate this -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SOCIAL TAB -->
+        <div id="content-social" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+                <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600 text-3xl"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                <h3 class="font-bold text-lg text-gray-800">กิจกรรมเพื่อสังคมและสาธารณประโยชน์</h3>
+                <p class="text-gray-500 text-sm mt-1">เป้าหมาย: 10 ชั่วโมง/ปี</p>
+                <div class="w-full bg-gray-200 rounded-full h-3 mt-4 mb-2"><div class="bg-blue-500 h-3 rounded-full" style="width: 60%"></div></div>
+                <p class="text-xs font-bold text-blue-600">ทำไปแล้ว 6 ชั่วโมง</p>
+                <button class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-xl font-bold shadow hover:bg-blue-700">+ บันทึกชั่วโมงจิตอาสา</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- AI Activity Planner Modal -->
+    <div id="ai-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="toggleAIModal()"></div>
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl relative z-10 flex flex-col max-h-[85vh] overflow-hidden">
+            <div id="ai-header" class="bg-gradient-to-r from-yellow-500 to-orange-500 p-4 text-white flex justify-between items-center">
+                <h3 class="font-heading font-bold flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles"></i> <span id="ai-title">AI Activity Designer</span></h3>
+                <button onclick="toggleAIModal()" class="hover:bg-white/20 rounded-full p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-4">
+                
+                <div id="ai-input-area">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">ประเภทกิจกรรม</label>
+                    <select id="ai-act-type" class="w-full p-3 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:ring-2 focus:ring-orange-500 outline-none">
+                        <option value="scout">กิจกรรมลูกเสือ/เกมสันทนาการ</option>
+                        <option value="club">กิจกรรมชุมนุม</option>
+                        <option value="social">โครงการจิตอาสา</option>
+                    </select>
+
+                    <label class="block text-sm font-bold text-gray-700 mb-2 mt-3" id="ai-label-topic">เป้าหมาย / หัวข้อ</label>
+                    <textarea id="ai-act-topic" rows="3" class="w-full p-3 rounded-xl border border-gray-200 bg-white text-sm focus:ring-2 focus:ring-orange-500 outline-none" placeholder="เช่น เกมละลายพฤติกรรม, กิจกรรมฝึกเงื่อนเชือก..."></textarea>
+                </div>
+                
+                <button onclick="runAI()" id="btn-gen" class="w-full bg-gray-900 text-white py-3 rounded-xl font-bold text-sm shadow hover:bg-black transition flex justify-center items-center gap-2">
+                    <i class="fa-solid fa-bolt text-yellow-400"></i> <span id="ai-btn-text">ออกแบบกิจกรรม</span>
+                </button>
+                
+                <div id="ai-result" class="text-sm text-gray-700 bg-orange-50 p-4 rounded-xl hidden border border-orange-100 prose prose-sm max-w-none"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Member Modal -->
+    <div id="add-member-modal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeAddMemberModal()"></div>
+        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl relative z-10 p-6 transform transition-all scale-100">
+            <h3 class="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-user-plus text-purple-500"></i> เพิ่มสมาชิกชุมนุม</h3>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">ชื่อ-นามสกุล</label>
+                    <input type="text" id="new-member-name" class="w-full p-2.5 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-purple-500 outline-none" placeholder="เช่น ด.ญ. ใจดี มีสุข">
+                </div>
+            </div>
+            
+            <div class="flex justify-end gap-2 mt-6">
+                <button onclick="closeAddMemberModal()" class="px-4 py-2 text-gray-500 text-sm hover:bg-gray-100 rounded-lg">ยกเลิก</button>
+                <button onclick="addClubMember()" class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-bold hover:bg-purple-700 shadow">เพิ่มรายชื่อ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-xl border-t border-gray-200 px-4 py-2 md:hidden z-50 rounded-t-2xl shadow-[0_-5px_15px_rgba(0,0,0,0.05)] no-print pb-safe">
+        <div class="relative flex justify-between items-center max-w-sm mx-auto">
+            <div id="nav-pill" class="absolute top-1/2 -translate-y-1/2 h-10 w-12 bg-blue-50 rounded-xl transition-all duration-300 ease-out -z-10"></div>
+            <a href="Main_Dashboard.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400 active-nav" data-index="0"><i class="fa-solid fa-house text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">หน้าหลัก</span></a>
+            <a href="LessonPlan_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="1"><i class="fa-solid fa-book-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">แผนการ</span></a>
+            <a href="Classroom_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="2"><i class="fa-solid fa-users text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ชั้นเรียน</span></a>
+            <a href="Project_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="3"><i class="fa-solid fa-folder-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">โครงการ</span></a>
+            <a href="TeacherPortfolio_BentoGrid.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="4"><i class="fa-solid fa-user text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ข้อมูล</span></a>
+        </div>
+    </nav>
+
+    <script>
+        document.getElementById('scout-date').textContent = new Date().toLocaleDateString('th-TH');
+        const apiKey = ""; // API Key
+
+        // Club Data
+        const clubMembers = [
+            { name: 'ด.ช. กิตติศักดิ์' },
+            { name: 'ด.ญ. มานี' }
+        ];
+
+        function renderClubMembers() {
+            const list = document.getElementById('club-list');
+            list.innerHTML = clubMembers.map(m => `
+                <tr>
+                    <td class="p-4 text-gray-800 font-medium">${m.name}</td>
+                    <td class="p-4 text-center text-green-600"><i class="fa-solid fa-check"></i></td>
+                    <td class="p-4 text-center text-gray-300">-</td>
+                    <td class="p-4 text-center"><span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded font-bold">ผ</span></td>
+                </tr>
+            `).join('');
+            document.getElementById('club-count').innerText = `สมาชิก ${clubMembers.length} คน`;
+        }
+
+        function openAddMemberModal() {
+            document.getElementById('new-member-name').value = '';
+            document.getElementById('add-member-modal').classList.remove('hidden');
+        }
+        
+        function closeAddMemberModal() {
+            document.getElementById('add-member-modal').classList.add('hidden');
+        }
+        
+        function addClubMember() {
+            const name = document.getElementById('new-member-name').value;
+            if(!name) return alert('กรุณากรอกชื่อ');
+            
+            clubMembers.push({ name: name });
+            renderClubMembers();
+            closeAddMemberModal();
+            alert('เพิ่มสมาชิกเรียบร้อยแล้ว');
+        }
+
+        // Tab Logic
+        function switchTab(id) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('div[id^="content-"]').forEach(content => content.classList.add('hidden'));
+            
+            document.getElementById(`tab-${id}`).classList.add('active');
+            document.getElementById(`content-${id}`).classList.remove('hidden');
+        }
+
+        // AI Logic
+        let aiMode = 'general'; // general or game
+
+        function toggleAIModal(mode = 'general') { 
+            const modal = document.getElementById('ai-modal');
+            const title = document.getElementById('ai-title');
+            const typeSel = document.getElementById('ai-act-type');
+            const topicInput = document.getElementById('ai-act-topic');
+            const btnText = document.getElementById('ai-btn-text');
+            const labelTopic = document.getElementById('ai-label-topic');
+            
+            aiMode = mode;
+
+            if(mode === 'game') {
+                title.innerText = "AI Scout Game Master";
+                typeSel.value = 'scout';
+                typeSel.disabled = true;
+                labelTopic.innerText = "ประเภทเกม/เพลง ที่ต้องการ";
+                topicInput.placeholder = "เช่น เกมกระชับมิตร, เพลงท่าทางตลกๆ...";
+                btnText.innerText = "แนะนำเกม/เพลง";
+            } else {
+                title.innerText = "AI Activity Designer";
+                typeSel.disabled = false;
+                labelTopic.innerText = "เป้าหมาย / หัวข้อ";
+                topicInput.placeholder = "เช่น กิจกรรมฝึกเงื่อนเชือก...";
+                btnText.innerText = "ออกแบบกิจกรรม";
+            }
+
+            modal.classList.toggle('hidden'); 
+        }
+
+        // AI Scout Log Writer
+        async function aiWriteLog() {
+            const textArea = document.getElementById('scout-note');
+            const btn = document.getElementById('btn-ai-log');
+            const keywords = textArea.value;
+            
+            if(!keywords) { alert("กรุณาพิมพ์คำสำคัญก่อนครับ เช่น เรียบร้อยดี, สนุกสนาน"); return; }
+            
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> กำลังเขียน...';
+            btn.disabled = true;
+
+            const prompt = `เขียนบันทึกหลังการจัดกิจกรรมลูกเสือ โดยขยายความจากคำเหล่านี้: "${keywords}" ให้เป็นประโยคที่สมบูรณ์ เป็นทางการ กระชับ ความยาวประมาณ 2-3 บรรทัด`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const data = await response.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || keywords;
+                textArea.value = text.trim();
+            } catch(e) { console.error(e); }
+            
+            btn.innerHTML = '<i class="fa-solid fa-pen-nib"></i> AI ช่วยเขียน';
+            btn.disabled = false;
+        }
+
+        async function runAI() {
+            const type = document.getElementById('ai-act-type').value;
+            const topic = document.getElementById('ai-act-topic').value;
+            const resDiv = document.getElementById('ai-result');
+            const btn = document.getElementById('btn-gen');
+
+            if(!topic) return;
+
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> กำลังประมวลผล...';
+            btn.disabled = true;
+            resDiv.classList.remove('hidden');
+
+            let prompt = "";
+            if (aiMode === 'game') {
+                prompt = `แนะนำเกมลูกเสือหรือเพลงนันทนาการ 1 กิจกรรม ในธีม "${topic}" \nระบุ: 1. ชื่อเกม/เพลง 2. วิธีการเล่น/เนื้อร้อง 3. อุปกรณ์ที่ใช้ 4. ประโยชน์`;
+            } else {
+                prompt = `ออกแบบกิจกรรมการเรียนรู้แบบ Active Learning สำหรับ "${type}" หัวข้อ "${topic}" \nให้ระบุ: 1. ชื่อกิจกรรม 2. อุปกรณ์ที่ต้องใช้ 3. ขั้นตอนการดำเนินกิจกรรม (ละเอียด) 4. ประโยชน์ที่นักเรียนได้รับ ตอบภาษาไทย รูปแบบ Markdown`;
+            }
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const data = await response.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Error";
+                resDiv.innerHTML = marked.parse(text);
+            } catch(e) { resDiv.textContent = "AI Error"; }
+
+            btn.innerHTML = '<i class="fa-solid fa-bolt text-yellow-400"></i> ดำเนินการเสร็จสิ้น';
+            btn.disabled = false;
+        }
+
+        // Nav Init
+        function initNav() {
+            const pill = document.getElementById('nav-pill');
+            const activeLink = document.querySelector('.active-nav'); // Defaults to none here, maybe Main Dashboard or Project if mapped
+            // Let's create a logic to highlight Project or Main Dashboard as parent
+             const targetLink = document.querySelector('.nav-item[data-index="0"]'); // Highlight Main as parent
+            if(targetLink) {
+                 targetLink.classList.add('active-nav');
+                 pill.style.left = targetLink.offsetLeft + 'px';
+                 pill.style.width = targetLink.offsetWidth + 'px';
+            }
+        }
+        window.addEventListener('load', initNav); window.addEventListener('resize', initNav);
+        
+        renderClubMembers(); // Init club list
+    </script>
+</body>
+</html>

@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJBKDWWT2P"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QJBKDWWT2P');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Classroom Manager - Firebase</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { heading: ['Prompt', 'sans-serif'], body: ['Sarabun', 'sans-serif'] },
+                    colors: { 'primary': '#0071e3', 'bg-gray': '#F5F5F7' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #F5F5F7; font-family: 'Prompt', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .nav-icon { transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        .active-nav .nav-icon { transform: translateY(-5px); color: #0071e3; }
+        .active-nav span { color: #0071e3; font-weight: 600; }
+        
+        .tab-btn { border-bottom: 2px solid transparent; color: #6b7280; }
+        .tab-btn.active { color: #0071e3; border-bottom: 2px solid #0071e3; background-color: #eff6ff; }
+        
+        .content-section { display: none; animation: fadeIn 0.3s ease-out; }
+        .content-section.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Input Number Hide Arrows */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* Toast Notification */
+        #toast-container { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); z-index: 100; pointer-events: none; }
+        .toast { pointer-events: auto; background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(4px); color: white; padding: 10px 20px; border-radius: 50px; font-size: 14px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); display: flex; items-center; gap: 8px; margin-top: 10px; }
+        .toast.success i { color: #4ade80; }
+        .toast.error i { color: #f87171; }
+        .toast.warning i { color: #facc15; }
+    </style>
+</head>
+<body class="pb-28 pt-20">
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-40 px-4 py-3 flex justify-between items-center h-16 border-b shadow-sm transition-all">
+        <div class="flex items-center gap-3 overflow-hidden">
+            <a href="Main_Dashboard.html" class="w-8 h-8 rounded-full bg-gray-100 flex-shrink-0 flex items-center justify-center hover:bg-gray-200 transition text-gray-600 active:scale-95">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <div class="truncate">
+                <!-- Subject Selector -->
+                <div class="relative group">
+                    <select id="subject-selector" class="font-heading font-bold text-gray-800 text-base sm:text-lg leading-tight bg-transparent outline-none cursor-pointer hover:text-blue-600 transition appearance-none pr-6 w-full truncate">
+                        <option value="com">วิชาคอมพิวเตอร์ ม.1 (ว21201)</option>
+                        <option value="math">วิชาคณิตศาสตร์ ม.2 (ค22101)</option>
+                        <option value="sci">วิชาวิทยาศาสตร์ ป.6 (ว16101)</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down absolute right-0 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none"></i>
+                </div>
+                <p class="text-xs text-gray-500 truncate" id="subject-desc">ภาคเรียนที่ 1/2567</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 flex-shrink-0">
+             <!-- 🟢 Connection Status Indicator (Added Here) -->
+             <div id="connection-status" class="hidden sm:flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-gray-100 text-gray-500 font-bold transition-colors duration-300">
+                 <span class="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></span> <span id="status-text">Connecting...</span>
+             </div>
+
+             <button onclick="window.toggleAIModal()" class="bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow hover:shadow-lg transition transform hover:scale-105 active:scale-95 flex items-center gap-1">
+                <i class="fa-solid fa-robot"></i> <span class="hidden xs:inline">AI ช่วยสรุป</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto px-4">
+        
+        <!-- Tools Bar (Search & Export & Add) -->
+        <div class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 mb-4 flex flex-col md:flex-row gap-3 justify-between items-center">
+            <div class="relative w-full md:w-64">
+                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="student-search" placeholder="ค้นหาชื่อนักเรียน..." class="w-full bg-gray-50 border border-gray-200 rounded-xl py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div class="flex gap-2 w-full md:w-auto overflow-x-auto no-scrollbar pb-1 sm:pb-0">
+                <!-- 🟢 ปุ่มเพิ่มนักเรียน (ลงทะเบียน) -->
+                <button onclick="window.openAddStudentModal()" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-bold hover:bg-indigo-100 transition whitespace-nowrap border border-indigo-100 active:scale-95">
+                    <i class="fa-solid fa-user-plus"></i> เพิ่มรายชื่อ
+                </button>
+                <button onclick="window.openImportModal()" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold hover:bg-blue-100 transition whitespace-nowrap border border-blue-100 active:scale-95">
+                    <i class="fa-solid fa-file-import"></i> นำเข้า
+                </button>
+                <button onclick="window.exportToCSV()" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-green-50 text-green-600 rounded-xl text-xs font-bold hover:bg-green-100 transition whitespace-nowrap border border-green-100 active:scale-95">
+                    <i class="fa-solid fa-file-csv"></i> ส่งออก
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-200 mb-6 bg-white rounded-t-xl overflow-hidden shadow-sm overflow-x-auto no-scrollbar">
+            <button onclick="window.showTab('students')" class="tab-btn active flex-1 py-3 px-4 font-bold text-gray-500 hover:bg-gray-50 transition text-sm"><i class="fa-solid fa-users mr-2"></i>รายชื่อ</button>
+            <button onclick="window.showTab('attendance')" class="tab-btn flex-1 py-3 px-4 font-bold text-gray-500 hover:bg-gray-50 transition text-sm"><i class="fa-solid fa-calendar-check mr-2"></i>เช็คชื่อ</button>
+            <button onclick="window.showTab('scores')" class="tab-btn flex-1 py-3 px-4 font-bold text-gray-500 hover:bg-gray-50 transition text-sm"><i class="fa-solid fa-star mr-2"></i>คะแนน</button>
+        </div>
+
+        <!-- 1. รายชื่อนักเรียน (Students) -->
+        <div id="students" class="content-section active">
+            <div id="loading-indicator" class="text-center py-10 text-gray-400 hidden flex flex-col items-center">
+                <i class="fa-solid fa-circle-notch animate-spin text-2xl mb-2 text-primary"></i>
+                <p class="text-sm">กำลังโหลดข้อมูล...</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="student-grid">
+                <!-- Firebase Data Injected Here -->
+            </div>
+            <!-- Empty State -->
+            <div id="no-result" class="hidden text-center py-10 text-gray-400">
+                <i class="fa-solid fa-user-slash text-4xl mb-2 text-gray-300"></i>
+                <p>ยังไม่มีข้อมูลนักเรียน</p>
+            </div>
+        </div>
+
+        <!-- 2. เช็คชื่อ (Attendance) -->
+        <div id="attendance" class="content-section">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
+                    <span class="font-bold text-sm text-gray-700">เช็คชื่อประจำวัน</span>
+                    <span class="text-xs text-gray-500 bg-white px-2 py-1 rounded border" id="date-display">--/--/----</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left whitespace-nowrap">
+                        <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+                            <tr>
+                                <th class="p-4 w-10">#</th>
+                                <th class="p-4">ชื่อ-สกุล</th>
+                                <th class="p-4 text-center">สถานะ</th>
+                                <th class="p-4 text-right">หมายเหตุ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attend-list" class="divide-y divide-gray-100">
+                            <!-- Firebase Data Injected Here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-4 bg-gray-50 flex justify-end">
+                    <button onclick="window.saveAttendance()" id="btn-save-attend" class="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-bold shadow hover:bg-blue-700 active:scale-95 transition flex items-center gap-2">
+                        <span>บันทึกการเช็คชื่อ</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. คะแนน (Scores) -->
+        <div id="scores" class="content-section">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left whitespace-nowrap">
+                        <thead class="bg-gray-50 text-gray-600 border-b text-xs uppercase font-bold">
+                            <tr>
+                                <th class="p-4 w-10">#</th>
+                                <th class="p-4 w-48">ชื่อ-สกุล</th>
+                                <th class="p-4 text-center w-20">หน่วย 1 (20)</th>
+                                <th class="p-4 text-center w-20">หน่วย 2 (20)</th>
+                                <th class="p-4 text-center w-20">กลาง (20)</th>
+                                <th class="p-4 text-center w-20">ปลาย (30)</th>
+                                <th class="p-4 text-center w-20">จิตพิสัย (10)</th>
+                                <th class="p-4 text-center w-16 bg-blue-50 text-blue-700">รวม</th>
+                                <th class="p-4 text-center w-16 bg-blue-50 text-blue-700">เกรด</th>
+                            </tr>
+                        </thead>
+                        <tbody id="score-list" class="divide-y divide-gray-100">
+                            <!-- Firebase Data Injected Here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 🟢 Add Student Modal -->
+    <div id="add-student-modal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="window.closeAddStudentModal()"></div>
+        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl relative z-10 p-6 transform transition-all scale-100">
+            <h3 class="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-user-plus text-indigo-500"></i> ลงทะเบียนนักเรียน</h3>
+            <p class="text-xs text-gray-500 mb-4">เพิ่มนักเรียนเข้าสู่รายวิชานี้ (บันทึกจริงลง Database)</p>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">รหัสนักเรียน</label>
+                    <input type="number" id="new-id" class="w-full p-2.5 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="เช่น 67003">
+                </div>
+                
+                <div class="flex gap-2">
+                    <div class="w-1/3">
+                        <label class="block text-xs font-bold text-gray-500 mb-1">คำนำหน้า</label>
+                        <select id="new-prefix" class="w-full p-2.5 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+                            <option value="ด.ช.">ด.ช.</option>
+                            <option value="ด.ญ.">ด.ญ.</option>
+                            <option value="นาย">นาย</option>
+                            <option value="น.ส.">น.ส.</option>
+                            <option value="นาง">นาง</option>
+                        </select>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-bold text-gray-500 mb-1">ชื่อ-นามสกุล</label>
+                        <input type="text" id="new-name" class="w-full p-2.5 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="รักเรียน เพียรศึกษา">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end gap-2 mt-6">
+                <button onclick="window.closeAddStudentModal()" class="px-4 py-2 text-gray-500 text-sm hover:bg-gray-100 rounded-lg">ยกเลิก</button>
+                <button id="btn-save-student" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 shadow flex items-center gap-2">
+                    <span>บันทึก</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal (Mockup) -->
+    <div id="import-modal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="window.closeImportModal()"></div>
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative z-10 p-6 transform transition-all scale-100">
+            <h3 class="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-file-import text-blue-500"></i> นำเข้าข้อมูลนักเรียน</h3>
+            
+            <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:bg-blue-50 hover:border-blue-400 cursor-pointer transition relative group">
+                <input type="file" id="file-upload" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="window.handleFileSelect(this)">
+                <i class="fa-solid fa-file-excel text-4xl text-green-500 mb-2 group-hover:scale-110 transition"></i>
+                <p class="text-sm font-bold text-gray-600">คลิกเพื่อเลือกไฟล์ Excel/CSV</p>
+                <p class="text-xs text-gray-400 mt-1" id="file-name">หรือลากไฟล์มาวางที่นี่</p>
+            </div>
+            
+            <div class="flex justify-end gap-2 mt-4">
+                <button onclick="window.closeImportModal()" class="px-4 py-2 text-gray-500 text-sm hover:bg-gray-100 rounded-lg">ยกเลิก</button>
+                <button onclick="window.simulateImport()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 shadow">นำเข้า</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Modal -->
+    <div id="ai-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="window.toggleAIModal()"></div>
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl relative z-10 flex flex-col max-h-[85vh] overflow-hidden">
+            <div class="bg-gradient-to-r from-green-500 to-teal-500 p-4 text-white flex justify-between items-center">
+                <h3 class="font-heading font-bold flex items-center gap-2"><i class="fa-solid fa-robot"></i> AI Classroom Assistant</h3>
+                <button onclick="window.toggleAIModal()" class="hover:bg-white/20 rounded-full p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-4">
+                <p class="text-sm text-gray-600">ให้ AI ช่วยวิเคราะห์ผลการเรียนหรือเขียนสมุดพก</p>
+                <select id="ai-mode" class="w-full p-3 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:ring-2 focus:ring-green-500 outline-none">
+                    <option value="comment">เขียนความเห็นลงสมุดพก (รายบุคคล)</option>
+                    <option value="analysis">วิเคราะห์ภาพรวมผลการเรียน (ทั้งห้อง)</option>
+                </select>
+                <textarea id="ai-input" rows="3" class="w-full p-3 rounded-xl border border-gray-200 bg-white text-sm focus:ring-2 focus:ring-green-500 outline-none" placeholder="ระบุชื่อนักเรียน หรือ รายละเอียดเพิ่มเติม..."></textarea>
+                
+                <button onclick="window.runAI()" id="btn-gen" class="w-full bg-gray-900 text-white py-3 rounded-xl font-bold text-sm shadow hover:bg-black transition active:scale-95">
+                    <i class="fa-solid fa-bolt text-yellow-400 mr-2"></i> ประมวลผล
+                </button>
+                <div id="ai-result" class="text-sm text-gray-700 bg-green-50 p-4 rounded-xl hidden border border-green-100 prose prose-sm max-w-none"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-xl border-t border-gray-200 px-4 py-2 md:hidden z-50 rounded-t-2xl shadow-[0_-5px_15px_rgba(0,0,0,0.05)] no-print pb-safe">
+        <div class="relative flex justify-between items-center max-w-sm mx-auto">
+            <div id="nav-pill" class="absolute top-1/2 -translate-y-1/2 h-10 w-12 bg-blue-50 rounded-xl transition-all duration-300 ease-out -z-10"></div>
+            <a href="Main_Dashboard.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="0"><i class="fa-solid fa-house text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">หน้าหลัก</span></a>
+            <a href="LessonPlan_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="1"><i class="fa-solid fa-book-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">แผนการ</span></a>
+            <a href="Classroom_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400 active-nav" data-index="2"><i class="fa-solid fa-users text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ชั้นเรียน</span></a>
+            <a href="Resource_Library.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="3"><i class="fa-solid fa-photo-film text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">คลังสื่อ</span></a>
+            <a href="TeacherPortfolio_BentoGrid.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="4"><i class="fa-solid fa-user text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ข้อมูล</span></a>
+        </div>
+    </nav>
+
+    <!-- MODULE SCRIPT: FIREBASE INTEGRATION -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyBBSbMRUEqxgVCb7CA2G--WjF9OCiAqzJY",
+          authDomain: "education-data-management.firebaseapp.com",
+          databaseURL: "https://education-data-management-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "education-data-management",
+          storageBucket: "education-data-management.firebasestorage.app",
+          messagingSenderId: "357308179180",
+          appId: "1:357308179180:web:c96102430aa0444c5cfbc9"
+        };
+
+        // --- Variables ---
+        let app, auth, db;
+        let isDemoMode = false;
+        let currentSubject = 'com';
+        let studentsData = [];
+        let currentUser = null;
+
+        // Mock Data for Demo
+        const mockStudents = {
+            'com': [
+                { docId: '1', studentId: '67001', name: 'ด.ช. กิตติศักดิ์ รักเรียน', subject: 'com', s1: 18, s2: 19, mid: 17, fin: 26, psy: 10 },
+                { docId: '2', studentId: '67002', name: 'ด.ญ. มานี มีตา', subject: 'com', s1: 20, s2: 20, mid: 18, fin: 28, psy: 10 }
+            ],
+            'math': [],
+            'sci': []
+        };
+
+        // --- Toast System ---
+        window.showToast = function(message, isError = false, isWarning = false) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            let icon = `<i class="fa-solid fa-circle-check text-green-400"></i>`;
+            let typeClass = 'success';
+            
+            if (isError) { icon = `<i class="fa-solid fa-circle-exclamation text-red-400"></i>`; typeClass = 'error'; }
+            else if (isWarning) { icon = `<i class="fa-solid fa-triangle-exclamation text-yellow-400"></i>`; typeClass = 'warning'; }
+
+            toast.className = `toast animate-fade-in-up ${typeClass}`;
+            toast.innerHTML = `${icon} ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('animate-fade-in-up');
+                toast.classList.add('animate-fade-out-down');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        };
+        
+        // --- Status Update Helper ---
+        function updateStatus(isOnline) {
+             const statusEl = document.getElementById('connection-status');
+             const statusText = document.getElementById('status-text');
+             if(statusEl) {
+                 statusEl.classList.remove('hidden');
+                 if(isOnline) {
+                     statusText.textContent = "Online";
+                     statusEl.classList.add('text-green-600', 'bg-green-50');
+                     statusEl.classList.remove('text-orange-500', 'bg-orange-50');
+                     statusEl.querySelector('span').className = "w-2 h-2 rounded-full bg-green-500";
+                 } else {
+                     statusText.textContent = "Demo Mode";
+                     statusEl.classList.add('text-orange-500', 'bg-orange-50');
+                     statusEl.classList.remove('text-green-600', 'bg-green-50');
+                     statusEl.querySelector('span').className = "w-2 h-2 rounded-full bg-orange-500";
+                 }
+             }
+        }
+
+        // --- Initialization ---
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (e) {
+            console.warn("Firebase Init Failed. Switching to Demo Mode.");
+            isDemoMode = true;
+            updateStatus(false);
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initNav();
+            document.getElementById('date-display').textContent = new Date().toLocaleDateString('th-TH');
+
+            if (!isDemoMode) {
+                // Attempt Anonymous Auth
+                try {
+                    await signInAnonymously(auth);
+                    onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            currentUser = user;
+                            updateStatus(true);
+                            fetchStudents(currentSubject);
+                        } else {
+                             // Handle logged out state if needed
+                        }
+                    });
+                } catch (error) {
+                    console.warn("Auth Failed. Switching to Demo Mode.", error);
+                    isDemoMode = true;
+                    updateStatus(false);
+                    // Silent Fallback
+                    fetchStudents(currentSubject);
+                }
+            } else {
+                updateStatus(false);
+                fetchStudents(currentSubject);
+            }
+
+            document.getElementById('btn-save-student').addEventListener('click', addStudentToFirebase);
+            document.getElementById('subject-selector').addEventListener('change', (e) => {
+                currentSubject = e.target.value;
+                fetchStudents(currentSubject);
+            });
+            document.getElementById('student-search').addEventListener('keyup', filterStudents);
+        });
+
+        // --- Fetch Data ---
+        function fetchStudents(subjectCode) {
+            const grid = document.getElementById('student-grid');
+            const attendList = document.getElementById('attend-list');
+            const scoreList = document.getElementById('score-list');
+            const loading = document.getElementById('loading-indicator');
+            const noResult = document.getElementById('no-result');
+
+            // Show loading if starting fresh
+            if(studentsData.length === 0 && !document.getElementById('student-grid').hasChildNodes()) {
+                 loading.classList.remove('hidden');
+            }
+
+            if (isDemoMode) {
+                setTimeout(() => {
+                    loading.classList.add('hidden');
+                    studentsData = mockStudents[subjectCode] || [];
+                    renderUI(studentsData);
+                }, 300); // Small delay for realism
+                return;
+            }
+
+            // Real Firestore Path
+            const appId = "education-data-management";
+            // Use specific collection path as required
+            const collectionPath = collection(db, 'artifacts', appId, 'public', 'data', 'students');
+            const q = query(collectionPath, where("subject", "==", subjectCode));
+            
+            onSnapshot(q, (querySnapshot) => {
+                loading.classList.add('hidden');
+                studentsData = [];
+                querySnapshot.forEach((docSnap) => {
+                    const s = docSnap.data();
+                    s.docId = docSnap.id;
+                    studentsData.push(s);
+                });
+                renderUI(studentsData);
+            }, (error) => {
+                console.warn("Firestore Access Error. Switching to Demo Mode.", error);
+                isDemoMode = true;
+                updateStatus(false);
+                loading.classList.add('hidden');
+                fetchStudents(subjectCode); 
+            });
+        }
+
+        // --- Render UI ---
+        function renderUI(data) {
+            const grid = document.getElementById('student-grid');
+            const attendList = document.getElementById('attend-list');
+            const scoreList = document.getElementById('score-list');
+            const noResult = document.getElementById('no-result');
+
+            if (data.length === 0) {
+                noResult.classList.remove('hidden');
+                grid.innerHTML = ''; attendList.innerHTML = ''; scoreList.innerHTML = '';
+                return;
+            } else {
+                noResult.classList.add('hidden');
+            }
+
+            let gridHTML = '';
+            let attendHTML = '';
+            let scoreHTML = '';
+
+            data.forEach(s => {
+                // 1. Grid
+                gridHTML += `
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center gap-4 shadow-sm hover:shadow-md transition group relative animate-fade-in">
+                        <button class="absolute top-2 right-2 text-gray-300 hover:text-red-500 transition opacity-0 group-hover:opacity-100" onclick="window.deleteStudent('${s.docId}')"><i class="fa-solid fa-trash-can"></i></button>
+                        <img src="${s.img || `https://ui-avatars.com/api/?name=${s.name}&background=random`}" class="w-14 h-14 rounded-full border-2 border-white shadow-sm">
+                        <div class="flex-1 min-w-0">
+                            <div class="text-xs text-gray-400 font-mono mb-0.5">ID: ${s.studentId}</div>
+                            <h3 class="font-bold text-gray-800 text-sm truncate">${s.name}</h3>
+                            <div class="flex gap-2 mt-2">
+                                <span class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] rounded font-bold">ปกติ</span>
+                                <a href="Student_Report.html?id=${s.docId}" class="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded hover:bg-gray-200 cursor-pointer">สมุดพก</a>
+                            </div>
+                        </div>
+                    </div>`;
+                
+                // 2. Attendance
+                attendHTML += `
+                    <tr class="border-b hover:bg-gray-50/50">
+                        <td class="p-4 text-gray-400 text-xs font-mono">${s.studentId}</td>
+                        <td class="p-4 font-medium text-gray-800">${s.name}</td>
+                        <td class="p-4 text-center">
+                            <div class="inline-flex bg-gray-100 rounded-lg p-1">
+                                <button onclick="window.toggleBtn(this)" class="w-8 h-8 rounded bg-white text-green-500 shadow-sm transition transform active:scale-95"><i class="fa-solid fa-check"></i></button>
+                                <button onclick="window.toggleBtn(this)" class="w-8 h-8 rounded text-gray-400 hover:text-yellow-500 transition"><i class="fa-solid fa-clock"></i></button>
+                                <button onclick="window.toggleBtn(this)" class="w-8 h-8 rounded text-gray-400 hover:text-red-500 transition"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </td>
+                        <td class="p-4 text-right"><input type="text" placeholder="..." class="w-20 bg-transparent border-b border-gray-200 text-xs text-right outline-none focus:border-blue-500"></td>
+                    </tr>`;
+
+                // 3. Score
+                const total = (parseInt(s.s1)||0) + (parseInt(s.s2)||0) + (parseInt(s.mid)||0) + (parseInt(s.fin)||0) + (parseInt(s.psy)||0);
+                scoreHTML += `
+                    <tr class="border-b hover:bg-gray-50/50">
+                        <td class="p-4 text-gray-400 text-xs font-mono">${s.studentId}</td>
+                        <td class="p-4 font-medium text-gray-800 text-xs sm:text-sm">${s.name}</td>
+                        <td class="p-4 text-center"><input type="number" value="${s.s1||0}" class="w-10 text-center bg-gray-50 rounded border border-gray-200 text-xs focus:bg-white outline-none" onchange="window.reCalc(this)"></td>
+                        <td class="p-4 text-center"><input type="number" value="${s.s2||0}" class="w-10 text-center bg-gray-50 rounded border border-gray-200 text-xs focus:bg-white outline-none" onchange="window.reCalc(this)"></td>
+                        <td class="p-4 text-center"><input type="number" value="${s.mid||0}" class="w-10 text-center bg-gray-50 rounded border border-gray-200 text-xs focus:bg-white outline-none" onchange="window.reCalc(this)"></td>
+                        <td class="p-4 text-center"><input type="number" value="${s.fin||0}" class="w-10 text-center bg-gray-50 rounded border border-gray-200 text-xs focus:bg-white outline-none" onchange="window.reCalc(this)"></td>
+                        <td class="p-4 text-center"><input type="number" value="${s.psy||0}" class="w-10 text-center bg-gray-50 rounded border border-gray-200 text-xs focus:bg-white outline-none" onchange="window.reCalc(this)"></td>
+                        <td class="p-4 text-center font-bold text-blue-700 bg-blue-50/30 total-cell">${total}</td>
+                        <td class="p-4 text-center font-bold text-white bg-blue-600 rounded-lg shadow-sm grade-cell text-xs">${window.calcGrade(total)}</td>
+                    </tr>`;
+            });
+            
+            grid.innerHTML = gridHTML;
+            attendList.innerHTML = attendHTML;
+            scoreList.innerHTML = scoreHTML;
+        }
+
+        // --- Add Student ---
+        async function addStudentToFirebase() {
+            const id = document.getElementById('new-id').value;
+            const prefix = document.getElementById('new-prefix').value;
+            const nameBody = document.getElementById('new-name').value;
+            const btn = document.getElementById('btn-save-student');
+            
+            if(!id || !nameBody) { window.showToast('กรุณากรอกข้อมูลให้ครบ', true); return; }
+            
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> กำลังบันทึก...';
+            btn.disabled = true;
+            const fullName = `${prefix}${nameBody}`;
+
+            if (isDemoMode) {
+                setTimeout(() => {
+                    const newStudent = { 
+                        docId: Date.now().toString(), 
+                        studentId: id, name: fullName, subject: currentSubject,
+                        s1:0, s2:0, mid:0, fin:0, psy:0 
+                    };
+                    if(!mockStudents[currentSubject]) mockStudents[currentSubject] = [];
+                    mockStudents[currentSubject].push(newStudent);
+                    renderUI(mockStudents[currentSubject]);
+                    window.closeAddStudentModal();
+                    window.showToast('เพิ่มนักเรียนเรียบร้อยแล้ว (Demo)');
+                    
+                    document.getElementById('new-id').value = '';
+                    document.getElementById('new-name').value = '';
+                    btn.innerHTML = 'บันทึก'; btn.disabled = false;
+                }, 500);
+                return;
+            }
+
+            try {
+                // Real Add
+                const appId = "education-data-management";
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'students'), {
+                    studentId: id, name: fullName, subject: currentSubject,
+                    s1:0, s2:0, mid:0, fin:0, psy:0, createdAt: new Date()
+                });
+                
+                window.closeAddStudentModal();
+                window.showToast('เพิ่มนักเรียนเรียบร้อยแล้ว!');
+                
+                document.getElementById('new-id').value = '';
+                document.getElementById('new-name').value = '';
+                
+            } catch (e) {
+                console.error("Error Adding:", e);
+                window.showToast('เกิดข้อผิดพลาดในการบันทึก', true);
+            } finally {
+                btn.innerHTML = 'บันทึก'; btn.disabled = false;
+            }
+        }
+
+        // --- Delete Student ---
+        window.deleteStudent = async (docId) => {
+            if(confirm('ต้องการลบรายชื่อนี้ใช่หรือไม่?')) {
+                if (isDemoMode) {
+                    mockStudents[currentSubject] = mockStudents[currentSubject].filter(s => s.docId !== docId);
+                    renderUI(mockStudents[currentSubject]);
+                    window.showToast('ลบข้อมูลเรียบร้อยแล้ว (Demo)');
+                    return;
+                }
+
+                try {
+                    const appId = "education-data-management";
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', docId));
+                    window.showToast('ลบข้อมูลเรียบร้อยแล้ว');
+                } catch (e) { 
+                    console.error(e);
+                    window.showToast('เกิดข้อผิดพลาดในการลบ', true);
+                }
+            }
+        };
+
+        // --- Other Helpers ---
+        window.saveAttendance = function() {
+            const btn = document.getElementById('btn-save-attend');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> กำลังบันทึก...';
+            setTimeout(() => {
+                btn.innerHTML = 'บันทึกการเช็คชื่อ';
+                window.showToast('บันทึกการเช็คชื่อเรียบร้อย!');
+            }, 500);
+        }
+
+        window.toggleAIModal = function() { document.getElementById('ai-modal').classList.toggle('hidden'); }
+        window.openAddStudentModal = function() { document.getElementById('add-student-modal').classList.remove('hidden'); }
+        window.closeAddStudentModal = function() { document.getElementById('add-student-modal').classList.add('hidden'); }
+        window.openImportModal = function() { document.getElementById('import-modal').classList.remove('hidden'); }
+        window.closeImportModal = function() { document.getElementById('import-modal').classList.add('hidden'); }
+        window.handleFileSelect = function(input) { if (input.files && input.files[0]) document.getElementById('file-name').textContent = input.files[0].name; }
+        window.simulateImport = function() { window.showToast("นำเข้าข้อมูลเรียบร้อย (Simulation)"); window.closeImportModal(); }
+        window.exportToCSV = function() { window.showToast("ส่งออกข้อมูลเป็น CSV แล้ว"); }
+        window.showTab = function(id) {
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+        };
+        window.toggleBtn = function(btn) {
+            const parent = btn.parentElement;
+            parent.querySelectorAll('button').forEach(b => b.className = "w-8 h-8 rounded text-gray-400 hover:bg-white/50");
+            if(btn.innerHTML.includes('check')) btn.className = "w-8 h-8 rounded bg-green-500 text-white shadow-sm";
+            else if(btn.innerHTML.includes('clock')) btn.className = "w-8 h-8 rounded bg-yellow-400 text-white shadow-sm";
+            else btn.className = "w-8 h-8 rounded bg-red-500 text-white shadow-sm";
+        };
+        window.calcGrade = function(score) {
+            if(score >= 80) return '4'; if(score >= 75) return '3.5'; if(score >= 70) return '3';
+            if(score >= 65) return '2.5'; if(score >= 60) return '2'; if(score >= 55) return '1.5';
+            if(score >= 50) return '1'; return '0';
+        };
+        window.reCalc = function(input) {
+            const row = input.closest('tr');
+            const inputs = row.querySelectorAll('input[type="number"]');
+            let sum = 0;
+            inputs.forEach(inp => sum += Number(inp.value));
+            row.querySelector('.total-cell').textContent = sum;
+            row.querySelector('.grade-cell').textContent = window.calcGrade(sum);
+        };
+        window.initNav = function() {
+            const pill = document.getElementById('nav-pill');
+            const activeLink = document.querySelector('.active-nav');
+            if(activeLink) { pill.style.left = activeLink.offsetLeft + 'px'; pill.style.width = activeLink.offsetWidth + 'px'; }
+        }
+        window.filterStudents = function() {
+             const query = document.getElementById('student-search').value.toLowerCase();
+             const cards = document.querySelectorAll('#student-grid > div');
+             cards.forEach(card => {
+                 const name = card.querySelector('h3').textContent.toLowerCase();
+                 card.style.display = name.includes(query) ? 'flex' : 'none';
+             });
+        }
+        
+        window.runAI = async function() { 
+            const btn = document.getElementById('btn-gen');
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> กำลังประมวลผล...';
+            setTimeout(() => {
+                document.getElementById('ai-result').innerHTML = "AI: จากข้อมูล นักเรียนส่วนใหญ่มีผลการเรียนดีมาก แนะนำให้ส่งเสริมโครงงาน...";
+                btn.innerHTML = '<i class="fa-solid fa-bolt text-yellow-400 mr-2"></i> ประมวลผล';
+            }, 1000);
+        }
+
+        window.addEventListener('load', initNav); window.addEventListener('resize', initNav);
+    </script>
+</body>
+</html>
