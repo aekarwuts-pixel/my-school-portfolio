@@ -150,7 +150,7 @@
             <a href="Main_Dashboard.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="0"><i class="fa-solid fa-house text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">หน้าหลัก</span></a>
             <a href="LessonPlan_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="1"><i class="fa-solid fa-book-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">แผนการ</span></a>
             <a href="Classroom_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400 active-nav" data-index="2"><i class="fa-solid fa-users text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ชั้นเรียน</span></a>
-            <a href="Resource_Library.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="3"><i class="fa-solid fa-photo-film text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">คลังสื่อ</span></a>
+            <a href="Project_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="3"><i class="fa-solid fa-folder-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">โครงการ</span></a>
             <a href="TeacherPortfolio_BentoGrid.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="4"><i class="fa-solid fa-user text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ข้อมูล</span></a>
         </div>
     </nav>
@@ -160,9 +160,11 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
+        // IMPORTANT: Use your specific Firebase Config here to ensure connectivity
         const firebaseConfig = {
           apiKey: "AIzaSyBBSbMRUEqxgVCb7CA2G--WjF9OCiAqzJY",
           authDomain: "education-data-management.firebaseapp.com",
+          databaseURL: "https://education-data-management-default-rtdb.asia-southeast1.firebasedatabase.app",
           projectId: "education-data-management",
           storageBucket: "education-data-management.firebasestorage.app",
           messagingSenderId: "357308179180",
@@ -171,6 +173,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const appId = "education-data-management"; 
 
         // Get ID from URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -192,15 +195,17 @@
 
         // Fetch Data
         if(docId) {
-            getDoc(doc(db, 'artifacts', 'education-data-management', 'public', 'data', 'students', docId)).then((docSnap) => {
+            // Use Strict Path as per Classroom_Manager
+            getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', docId)).then((docSnap) => {
                 if (docSnap.exists()) {
                     studentData = docSnap.data();
                     renderReport(studentData);
                 } else {
                     document.getElementById('student-name').textContent = "ไม่พบข้อมูลนักเรียน";
+                    loadDemoData(); // Fallback to demo if not found
                 }
             }).catch(e => {
-                console.warn("Firebase Error, showing demo data");
+                console.warn("Firebase Error, showing demo data", e);
                 loadDemoData();
             });
         } else {
@@ -220,7 +225,7 @@
             const total = (parseInt(data.s1)||0) + (parseInt(data.s2)||0) + (parseInt(data.mid)||0) + (parseInt(data.fin)||0) + (parseInt(data.psy)||0);
             const grade = window.calcGrade(total);
             const subjectName = data.subject === 'com' ? 'คอมพิวเตอร์' : (data.subject === 'math' ? 'คณิตศาสตร์' : 'วิทยาศาสตร์');
-            const credits = 1.0; // Default credit
+            const credits = 1.0; 
 
             const tbody = document.getElementById('grade-table-body');
             tbody.innerHTML = `
@@ -245,6 +250,9 @@
             });
         }
 
+        // Updated API Key for AI
+        const apiKey = "AIzaSyCmcCL6eAc11vaZpsFvYZwqb_zzyVPeK9o";
+
         // Export function to global
         window.analyzeWithAI = async function() {
             const btn = document.querySelector('button[onclick="analyzeWithAI()"]');
@@ -254,8 +262,7 @@
             
             const total = (parseInt(studentData.s1)||0) + (parseInt(studentData.s2)||0) + (parseInt(studentData.mid)||0) + (parseInt(studentData.fin)||0) + (parseInt(studentData.psy)||0);
             const prompt = `วิเคราะห์ผลการเรียนของนักเรียนชื่อ ${studentData.name} คะแนนรวม ${total}/100 วิชาคอมพิวเตอร์ ให้คำแนะนำเชิงบวก สุภาพ และสร้างสรรค์ สำหรับลงในสมุดพก (ภาษาไทย)`;
-            const apiKey = ""; 
-
+            
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
                     method: 'POST',
@@ -274,13 +281,10 @@
         // Nav Init
         function initNav() {
             const pill = document.getElementById('nav-pill');
-            const activeLink = document.querySelector('.active-nav'); // Defaults to none
-            // This page is reached from Classroom, so highlight Classroom (Index 2)
-            const targetLink = document.querySelector('.nav-item[data-index="2"]');
-            if(targetLink) {
-                 targetLink.classList.add('active-nav');
-                 pill.style.left = targetLink.offsetLeft + 'px';
-                 pill.style.width = targetLink.offsetWidth + 'px';
+            const activeLink = document.querySelector('.active-nav');
+            if(activeLink && pill) {
+                pill.style.left = activeLink.offsetLeft + 'px';
+                pill.style.width = activeLink.offsetWidth + 'px';
             }
         }
         window.addEventListener('load', initNav); window.addEventListener('resize', initNav);

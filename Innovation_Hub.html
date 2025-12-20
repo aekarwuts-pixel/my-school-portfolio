@@ -1,15 +1,8 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJBKDWWT2P"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-QJBKDWWT2P');
-    </script>
-
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QJBKDWWT2P');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Innovation Hub - Education Data Management</title>
@@ -251,7 +244,8 @@
         ];
 
         let currentMode = 'match';
-        const apiKey = ""; 
+        // API Key Updated
+        const apiKey = "AIzaSyCmcCL6eAc11vaZpsFvYZwqb_zzyVPeK9o";
 
         function init() {
             renderGrid('all');
@@ -411,8 +405,7 @@
 
         function initNav() {
             const pill = document.getElementById('nav-pill');
-            const activeLink = document.querySelector('.nav-item[data-index="4"]'); // Map Innovation to 'สื่อ' (index 3 or 4 based on your pref, used 4 here as placeholder, check main nav)
-            // Let's use index 3 'คลังสื่อ' as parent
+            // Assuming Innovation is mapped to 'สื่อ' (Resource) in bottom nav which is index 3
             const targetLink = document.querySelector('.nav-item[data-index="3"]');
             if(targetLink) {
                  targetLink.classList.add('active-nav');

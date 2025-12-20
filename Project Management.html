@@ -241,7 +241,7 @@
             <a href="Main_Dashboard.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="0"><i class="fa-solid fa-house text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">หน้าหลัก</span></a>
             <a href="LessonPlan_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="1"><i class="fa-solid fa-book-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">แผนการ</span></a>
             <a href="Classroom_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="2"><i class="fa-solid fa-users text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ชั้นเรียน</span></a>
-            <a href="Project_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400 active-nav" data-index="3"><i class="fa-solid fa-folder-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">โครงการ</span></a>
+            <a href="Project_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400 active-nav" data-index="3"><i class="fa-solid fa-folder-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-bold">โครงการ</span></a>
             <a href="TeacherPortfolio_BentoGrid.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="4"><i class="fa-solid fa-user text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ข้อมูล</span></a>
         </div>
     </nav>
@@ -314,6 +314,8 @@
         window.addEventListener('resize', initNav);
 
         // AI Logic
+        const apiKey = "AIzaSyCmcCL6eAc11vaZpsFvYZwqb_zzyVPeK9o";
+        
         function toggleAIModal(tab = 'draft') { 
             document.getElementById('ai-modal').classList.toggle('hidden');
             if(!document.getElementById('ai-modal').classList.contains('hidden')) {
@@ -336,7 +338,6 @@
             resDiv.classList.remove('hidden');
             resDiv.innerHTML = '<p class="text-center text-gray-500 animate-pulse">กำลังประมวลผลข้อมูล...</p>';
 
-            const apiKey = ""; // API Key
             let prompt = "";
 
             if (action === 'draft') {
