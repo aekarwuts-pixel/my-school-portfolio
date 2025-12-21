@@ -40,6 +40,7 @@
         .grade-3 { background: #dbeafe; color: #1e40af; }
         .grade-2 { background: #fef9c3; color: #854d0e; }
         .grade-1 { background: #fee2e2; color: #991b1b; }
+        .grade-0 { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body class="pb-28 pt-14 md:pt-0">
@@ -72,7 +73,7 @@
             <div class="text-left md:text-right w-full md:w-auto bg-gray-50 md:bg-transparent p-4 md:p-0 rounded-xl">
                 <div class="inline-block bg-gray-200 px-3 py-1 rounded text-sm font-mono text-gray-600 mb-2">ID: <span id="student-id">...</span></div>
                 <h2 class="text-xl font-bold text-blue-700" id="student-name">กำลังโหลดข้อมูล...</h2>
-                <p class="text-sm text-gray-600">ชั้นมัธยมศึกษาปีที่ 1/1</p>
+                <p class="text-sm text-gray-600" id="student-class">วิชาคอมพิวเตอร์</p>
             </div>
         </header>
 
@@ -88,15 +89,22 @@
                     <table class="w-full text-sm border-collapse">
                         <thead>
                             <tr class="bg-gray-100 text-gray-600">
-                                <th class="py-2 pl-2 text-left border border-gray-200">รายวิชา</th>
-                                <th class="py-2 text-center border border-gray-200">หน่วยกิต</th>
-                                <th class="py-2 text-center border border-gray-200">คะแนนรวม</th>
-                                <th class="py-2 text-center border border-gray-200">เกรด</th>
+                                <th class="py-2 pl-2 text-left border border-gray-200">รายการประเมิน</th>
+                                <th class="py-2 text-center border border-gray-200">คะแนนเต็ม</th>
+                                <th class="py-2 text-center border border-gray-200">คะแนนที่ได้</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100" id="grade-table-body">
                             <!-- Data populated by JS -->
+                            <tr><td class="py-3 pl-2 border border-gray-200 text-center" colspan="3">กำลังดึงข้อมูล...</td></tr>
                         </tbody>
+                        <tfoot class="bg-gray-50 font-bold">
+                            <tr>
+                                <td class="py-3 pl-2 border border-gray-200 text-right">รวมทั้งสิ้น</td>
+                                <td class="py-3 text-center border border-gray-200">100</td>
+                                <td class="py-3 text-center border border-gray-200 text-blue-600 text-lg" id="total-score-display">-</td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </section>
 
@@ -115,7 +123,7 @@
                 <!-- Print only version of comment -->
                 <div class="hidden print:block border border-gray-300 p-4 rounded min-h-[100px]">
                     <p class="font-bold mb-2">ความเห็นครูที่ปรึกษา:</p>
-                    <p id="print-comment-area">..................................................................................................................................................................</p>
+                    <p id="print-comment-area" class="leading-loose">..................................................................................................................................................................</p>
                 </div>
             </div>
 
@@ -127,8 +135,9 @@
                 </div>
                 
                 <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-center">
-                    <p class="text-xs text-gray-500 uppercase font-bold">เกรดเฉลี่ยสะสม</p>
-                    <div class="text-4xl font-bold text-blue-600 mt-1" id="gpa-display">-</div>
+                    <p class="text-xs text-gray-500 uppercase font-bold">ระดับผลการเรียน</p>
+                    <div class="text-5xl font-bold text-blue-600 mt-2" id="gpa-display">-</div>
+                    <p class="text-xs text-gray-400 mt-1" id="gpa-text">รอดำเนินการ</p>
                 </div>
             </div>
         </div>
@@ -150,7 +159,7 @@
             <a href="Main_Dashboard.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="0"><i class="fa-solid fa-house text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">หน้าหลัก</span></a>
             <a href="LessonPlan_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="1"><i class="fa-solid fa-book-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">แผนการ</span></a>
             <a href="Classroom_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400 active-nav" data-index="2"><i class="fa-solid fa-users text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ชั้นเรียน</span></a>
-            <a href="Project_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="3"><i class="fa-solid fa-folder-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">โครงการ</span></a>
+            <a href="Resource_Library.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="3"><i class="fa-solid fa-photo-film text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">คลังสื่อ</span></a>
             <a href="TeacherPortfolio_BentoGrid.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="4"><i class="fa-solid fa-user text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ข้อมูล</span></a>
         </div>
     </nav>
@@ -159,8 +168,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
-        // IMPORTANT: Use your specific Firebase Config here to ensure connectivity
         const firebaseConfig = {
           apiKey: "AIzaSyBBSbMRUEqxgVCb7CA2G--WjF9OCiAqzJY",
           authDomain: "education-data-management.firebaseapp.com",
@@ -171,9 +180,13 @@
           appId: "1:357308179180:web:c96102430aa0444c5cfbc9"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const appId = "education-data-management"; 
+        let app, auth, db;
+        try {
+             app = initializeApp(firebaseConfig);
+             auth = getAuth(app);
+             db = getFirestore(app);
+             signInAnonymously(auth).catch(e => console.warn("Auth failed, using demo"));
+        } catch(e) { console.warn("Firebase init failed"); }
 
         // Get ID from URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -194,19 +207,25 @@
         };
 
         // Fetch Data
-        if(docId) {
-            // Use Strict Path as per Classroom_Manager
-            getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', docId)).then((docSnap) => {
-                if (docSnap.exists()) {
-                    studentData = docSnap.data();
-                    renderReport(studentData);
+        if(docId && db) {
+            onAuthStateChanged(auth, (user) => {
+                if(user) {
+                     // Path must match Classroom_Manager: artifacts/{appId}/public/data/students
+                     getDoc(doc(db, 'artifacts', 'education-data-management', 'public', 'data', 'students', docId)).then((docSnap) => {
+                        if (docSnap.exists()) {
+                            studentData = docSnap.data();
+                            renderReport(studentData);
+                        } else {
+                            document.getElementById('student-name').textContent = "ไม่พบข้อมูล (ID ผิด)";
+                            loadDemoData();
+                        }
+                    }).catch(e => {
+                        console.warn("Firebase Error", e);
+                        loadDemoData();
+                    });
                 } else {
-                    document.getElementById('student-name').textContent = "ไม่พบข้อมูลนักเรียน";
-                    loadDemoData(); // Fallback to demo if not found
+                    loadDemoData(); // Fallback
                 }
-            }).catch(e => {
-                console.warn("Firebase Error, showing demo data", e);
-                loadDemoData();
             });
         } else {
             loadDemoData();
@@ -220,24 +239,34 @@
         function renderReport(data) {
             document.getElementById('student-name').textContent = data.name;
             document.getElementById('student-id').textContent = data.studentId;
+            
+            let subjectName = "วิชาคอมพิวเตอร์";
+            if(data.subject === 'math') subjectName = "วิชาคณิตศาสตร์";
+            if(data.subject === 'sci') subjectName = "วิชาวิทยาศาสตร์";
+            document.getElementById('student-class').textContent = subjectName;
 
             // Generate Score Table
-            const total = (parseInt(data.s1)||0) + (parseInt(data.s2)||0) + (parseInt(data.mid)||0) + (parseInt(data.fin)||0) + (parseInt(data.psy)||0);
+            const s1 = parseInt(data.s1)||0;
+            const s2 = parseInt(data.s2)||0;
+            const mid = parseInt(data.mid)||0;
+            const fin = parseInt(data.fin)||0;
+            const psy = parseInt(data.psy)||0;
+            const total = s1 + s2 + mid + fin + psy;
             const grade = window.calcGrade(total);
-            const subjectName = data.subject === 'com' ? 'คอมพิวเตอร์' : (data.subject === 'math' ? 'คณิตศาสตร์' : 'วิทยาศาสตร์');
-            const credits = 1.0; 
 
             const tbody = document.getElementById('grade-table-body');
             tbody.innerHTML = `
-                <tr class="border-b border-gray-100">
-                    <td class="py-3 pl-2 border border-gray-200">${subjectName}</td>
-                    <td class="py-3 text-center border border-gray-200">${credits}</td>
-                    <td class="py-3 text-center border border-gray-200">${total}</td>
-                    <td class="py-3 text-center border border-gray-200"><span class="grade-badge grade-${Math.floor(grade)}">${grade}</span></td>
-                </tr>
+                <tr class="border-b border-gray-100"><td class="py-3 pl-2 border border-gray-200">คะแนนเก็บหน่วยที่ 1</td><td class="py-3 text-center border border-gray-200">20</td><td class="py-3 text-center border border-gray-200">${s1}</td></tr>
+                <tr class="border-b border-gray-100"><td class="py-3 pl-2 border border-gray-200">คะแนนเก็บหน่วยที่ 2</td><td class="py-3 text-center border border-gray-200">20</td><td class="py-3 text-center border border-gray-200">${s2}</td></tr>
+                <tr class="border-b border-gray-100"><td class="py-3 pl-2 border border-gray-200">สอบกลางภาค</td><td class="py-3 text-center border border-gray-200">20</td><td class="py-3 text-center border border-gray-200">${mid}</td></tr>
+                <tr class="border-b border-gray-100"><td class="py-3 pl-2 border border-gray-200">สอบปลายภาค</td><td class="py-3 text-center border border-gray-200">30</td><td class="py-3 text-center border border-gray-200">${fin}</td></tr>
+                <tr class="border-b border-gray-100"><td class="py-3 pl-2 border border-gray-200">จิตพิสัย</td><td class="py-3 text-center border border-gray-200">10</td><td class="py-3 text-center border border-gray-200">${psy}</td></tr>
             `;
             
+            document.getElementById('total-score-display').textContent = total;
             document.getElementById('gpa-display').textContent = grade;
+            document.getElementById('gpa-text').textContent = grade >= 1 ? "ผ่านเกณฑ์การประเมิน" : "ควรปรับปรุง";
+            if(grade == '0') document.getElementById('gpa-display').classList.add('text-red-500');
 
             // Init Chart
             new Chart(document.getElementById('skillsChart').getContext('2d'), {
@@ -246,7 +275,7 @@
                     labels: ['วิชาการ', 'เทคโนโลยี', 'ภาษา', 'วินัย', 'จิตอาสา'],
                     datasets: [{ label: 'สมรรถนะ', data: [total, 90, 70, (data.psy||8)*10, 80], backgroundColor: 'rgba(0, 113, 227, 0.2)', borderColor: '#0071e3' }]
                 },
-                options: { scales: { r: { ticks: { display: false }, suggestMin: 0 } }, plugins: { legend: { display: false } } }
+                options: { scales: { r: { ticks: { display: false }, suggestMin: 0, suggestMax: 100 } }, plugins: { legend: { display: false } } }
             });
         }
 
@@ -260,8 +289,10 @@
             
             btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> กำลังวิเคราะห์...';
             
-            const total = (parseInt(studentData.s1)||0) + (parseInt(studentData.s2)||0) + (parseInt(studentData.mid)||0) + (parseInt(studentData.fin)||0) + (parseInt(studentData.psy)||0);
-            const prompt = `วิเคราะห์ผลการเรียนของนักเรียนชื่อ ${studentData.name} คะแนนรวม ${total}/100 วิชาคอมพิวเตอร์ ให้คำแนะนำเชิงบวก สุภาพ และสร้างสรรค์ สำหรับลงในสมุดพก (ภาษาไทย)`;
+            const total = parseInt(document.getElementById('total-score-display').textContent) || 0;
+            const name = document.getElementById('student-name').textContent;
+            
+            const prompt = `วิเคราะห์ผลการเรียนของนักเรียนชื่อ ${name} คะแนนรวม ${total}/100 วิชาคอมพิวเตอร์ ให้คำแนะนำเชิงบวก สุภาพ และสร้างสรรค์ สำหรับลงในสมุดพก (ภาษาไทย)`;
             
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
@@ -281,10 +312,12 @@
         // Nav Init
         function initNav() {
             const pill = document.getElementById('nav-pill');
-            const activeLink = document.querySelector('.active-nav');
-            if(activeLink && pill) {
-                pill.style.left = activeLink.offsetLeft + 'px';
-                pill.style.width = activeLink.offsetWidth + 'px';
+            const activeLink = document.querySelector('.active-nav'); 
+            const targetLink = document.querySelector('.nav-item[data-index="2"]'); // Highlights Classroom
+            if(targetLink && pill) {
+                 targetLink.classList.add('active-nav');
+                 pill.style.left = targetLink.offsetLeft + 'px';
+                 pill.style.width = targetLink.offsetWidth + 'px';
             }
         }
         window.addEventListener('load', initNav); window.addEventListener('resize', initNav);

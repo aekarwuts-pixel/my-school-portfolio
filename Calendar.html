@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJBKDWWT2P"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QJBKDWWT2P');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Academic Calendar</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { heading: ['Prompt', 'sans-serif'], body: ['Sarabun', 'sans-serif'] },
+                    colors: { 'primary': '#0071e3', 'bg-gray': '#F5F5F7' },
+                    animation: { 'pulse-slow': 'pulse 3s infinite' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #F5F5F7; font-family: 'Prompt', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .nav-icon { transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        .active-nav .nav-icon { transform: translateY(-5px); color: #0071e3; }
+        .active-nav span { color: #0071e3; font-weight: 600; }
+        
+        /* Calendar Styles */
+        .calendar-day { min-height: 100px; transition: all 0.2s; cursor: pointer; position: relative; background: white; }
+        .calendar-day:hover { background-color: #f0f9ff; }
+        .calendar-day.today { background-color: #eff6ff; border: 2px solid #0071e3; }
+        .calendar-day.other-month { background-color: #f9fafb; color: #d1d5db; }
+        
+        .event-badge { font-size: 10px; padding: 2px 4px; border-radius: 4px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        
+        /* Editable Schedule */
+        .schedule-cell[contenteditable="true"]:focus { outline: 2px solid #0071e3; background: #fff; z-index: 10; position: relative; border-radius: 4px; padding: 4px; }
+        .schedule-cell { height: 60px; vertical-align: middle; cursor: text; transition: background 0.2s; }
+        .schedule-cell:hover { background-color: #f8fafc; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="pb-28 pt-20">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-40 px-4 py-3 flex justify-between items-center h-16 border-b shadow-sm transition-all">
+        <div class="flex items-center gap-3">
+            <a href="Main_Dashboard.html" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-gray-600 active:scale-95">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1 class="font-heading font-bold text-gray-800 text-lg leading-tight">ปฏิทินวิชาการ</h1>
+                <div class="flex items-center gap-2">
+                    <div class="relative group">
+                        <select id="semester-select" onchange="changeSemester()" class="text-xs text-primary font-bold bg-transparent outline-none cursor-pointer appearance-none pr-4">
+                            <option value="1/2567">ภาคเรียนที่ 1/2567</option>
+                            <option value="2/2567">ภาคเรียนที่ 2/2567</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-0 top-1/2 -translate-y-1/2 text-[10px] text-primary pointer-events-none"></i>
+                    </div>
+                    <button onclick="addNewSemester()" class="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 hover:text-primary hover:bg-blue-50 transition"><i class="fa-solid fa-plus"></i> เพิ่มเทอม</button>
+                </div>
+            </div>
+        </div>
+        <button onclick="toggleAIModal()" class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow hover:shadow-lg transition transform hover:scale-105 active:scale-95 flex items-center gap-1">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> <span class="hidden sm:inline">AI วางแผน</span>
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto px-4">
+
+        <!-- 1. Tabs Switcher -->
+        <div class="flex justify-center mb-6">
+            <div class="bg-white p-1 rounded-xl shadow-sm border border-gray-200 inline-flex">
+                <button onclick="switchView('calendar')" id="btn-calendar" class="px-6 py-2 rounded-lg text-sm font-bold bg-blue-50 text-blue-600 transition shadow-sm">ปฏิทิน</button>
+                <button onclick="switchView('schedule')" id="btn-schedule" class="px-6 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-50 transition">ตารางสอน</button>
+            </div>
+        </div>
+
+        <!-- 2. Calendar View -->
+        <div id="view-calendar" class="block animate-fade-in">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
+                    <h2 class="font-bold text-lg text-gray-800" id="calendar-title">ตุลาคม 2567</h2>
+                    <div class="flex gap-2">
+                        <button onclick="prevMonth()" class="w-8 h-8 rounded-full bg-white border hover:bg-gray-100 active:scale-95"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                        <button onclick="today()" class="text-xs bg-white border px-3 rounded-full hover:bg-gray-100 font-bold text-primary">วันนี้</button>
+                        <button onclick="nextMonth()" class="w-8 h-8 rounded-full bg-white border hover:bg-gray-100 active:scale-95"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                    </div>
+                </div>
+                <!-- Days Header -->
+                <div class="grid grid-cols-7 text-center border-b bg-gray-50/50">
+                    <div class="py-2 text-xs font-bold text-red-500">อา</div>
+                    <div class="py-2 text-xs font-bold text-gray-500">จ</div>
+                    <div class="py-2 text-xs font-bold text-gray-500">อ</div>
+                    <div class="py-2 text-xs font-bold text-gray-500">พ</div>
+                    <div class="py-2 text-xs font-bold text-gray-500">พฤ</div>
+                    <div class="py-2 text-xs font-bold text-gray-500">ศ</div>
+                    <div class="py-2 text-xs font-bold text-purple-500">ส</div>
+                </div>
+                <!-- Calendar Grid (Dynamic) -->
+                <div class="grid grid-cols-7 text-sm bg-gray-100 gap-px border-b border-gray-200" id="calendar-grid">
+                    <!-- JS will render days here -->
+                </div>
+            </div>
+            <p class="text-xs text-gray-400 mt-2 text-center">* คลิกที่วันที่เพื่อเพิ่มกิจกรรม</p>
+        </div>
+
+        <!-- 3. Schedule View (6 Periods - Editable) -->
+        <div id="view-schedule" class="hidden animate-fade-in">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
+                    <h2 class="font-bold text-lg text-gray-800">ตารางสอน (แก้ไขได้)</h2>
+                    <button onclick="saveSchedule()" class="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-blue-700 transition flex items-center gap-1">
+                        <i class="fa-solid fa-save"></i> บันทึกตาราง
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm border-collapse min-w-[800px]">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-500 text-xs uppercase">
+                                <th class="p-3 border w-24">วัน/เวลา</th>
+                                <th class="p-3 border text-center w-[12%]">08:30-09:30<br>คาบที่ 1</th>
+                                <th class="p-3 border text-center w-[12%]">09:30-10:30<br>คาบที่ 2</th>
+                                <th class="p-3 border text-center w-[12%]">10:30-11:30<br>คาบที่ 3</th>
+                                <th class="p-3 border text-center w-[10%] bg-gray-200">11:30-12:30<br>พัก</th>
+                                <th class="p-3 border text-center w-[12%]">12:30-13:30<br>คาบที่ 4</th>
+                                <th class="p-3 border text-center w-[12%]">13:30-14:30<br>คาบที่ 5</th>
+                                <th class="p-3 border text-center w-[12%]">14:30-15:30<br>คาบที่ 6</th>
+                            </tr>
+                        </thead>
+                        <tbody class="font-medium text-gray-700" id="schedule-body">
+                            <!-- Rows -->
+                            <tr>
+                                <td class="p-3 border text-center font-bold bg-yellow-50 text-yellow-700">จันทร์</td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"><div class="bg-blue-50 text-blue-700 p-1 rounded text-xs">คอมฯ ม.1/1</div></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"><div class="bg-green-50 text-green-700 p-1 rounded text-xs">วิทย์ฯ ม.2/1</div></td>
+                                <td class="p-1 border text-center bg-gray-100 schedule-cell" rowspan="5"><span class="writing-mode-vertical text-gray-400 text-xs">พักกลางวัน</span></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"><div class="bg-purple-50 text-purple-700 p-1 rounded text-xs">แนะแนว</div></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 border text-center font-bold bg-pink-50 text-pink-700">อังคาร</td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"><div class="bg-blue-50 text-blue-700 p-1 rounded text-xs">คอมฯ ม.1/2</div></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"><div class="bg-orange-50 text-orange-700 p-1 rounded text-xs">ลูกเสือ</div></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                            </tr>
+                             <tr>
+                                <td class="p-3 border text-center font-bold bg-green-50 text-green-700">พุธ</td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"><div class="bg-green-50 text-green-700 p-1 rounded text-xs">วิทย์ฯ ม.2/2</div></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"><div class="bg-indigo-50 text-indigo-700 p-1 rounded text-xs">ชุมนุม</div></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                            </tr>
+                             <tr>
+                                <td class="p-3 border text-center font-bold bg-orange-50 text-orange-700">พฤหัส</td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"><div class="bg-blue-50 text-blue-700 p-1 rounded text-xs">คอมฯ ม.3/1</div></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"><div class="bg-red-50 text-red-700 p-1 rounded text-xs">ซ่อมเสริม</div></td>
+                            </tr>
+                             <tr>
+                                <td class="p-3 border text-center font-bold bg-blue-50 text-blue-700">ศุกร์</td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"><div class="bg-green-50 text-green-700 p-1 rounded text-xs">วิทย์ฯ ม.1/1</div></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"><div class="bg-green-50 text-green-700 p-1 rounded text-xs">วิทย์ฯ ม.1/2</div></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"><div class="bg-gray-50 text-gray-700 p-1 rounded text-xs">PLC/อบรม</div></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                                <td class="p-1 border text-center schedule-cell" contenteditable="true"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+             <p class="text-xs text-gray-400 mt-2 text-center">* คลิกที่ช่องตารางเพื่อพิมพ์แก้ไขรายวิชา</p>
+        </div>
+
+    </div>
+
+    <!-- Add Event Modal -->
+    <div id="event-modal" class="fixed inset-0 z-[80] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeEventModal()"></div>
+        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl relative z-10 p-6 transform transition-all scale-100">
+            <h3 class="font-bold text-lg text-gray-800 mb-2">เพิ่มกิจกรรม</h3>
+            <p class="text-xs text-gray-500 mb-4" id="selected-date-display">วันที่ ...</p>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">ชื่อกิจกรรม</label>
+                    <input type="text" id="event-title" class="w-full p-2.5 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-primary outline-none" placeholder="เช่น ส่งเกรด, ประชุมครู">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">ประเภท</label>
+                    <div class="flex gap-2">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="event-type" value="red" class="peer hidden" checked>
+                            <span class="block px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-500 peer-checked:bg-red-500 peer-checked:text-white border border-transparent peer-checked:border-red-600">สำคัญ</span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="event-type" value="green" class="peer hidden">
+                            <span class="block px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-500 peer-checked:bg-green-500 peer-checked:text-white border border-transparent peer-checked:border-green-600">กิจกรรม</span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="event-type" value="yellow" class="peer hidden">
+                            <span class="block px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-500 peer-checked:bg-yellow-500 peer-checked:text-white border border-transparent peer-checked:border-yellow-600">วันหยุด</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end gap-2 mt-6">
+                <button onclick="closeEventModal()" class="px-4 py-2 text-gray-500 text-sm hover:bg-gray-100 rounded-lg">ยกเลิก</button>
+                <button onclick="saveEvent()" class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:bg-blue-600 shadow">บันทึก</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Modal -->
+    <div id="ai-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl relative overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-4 text-white flex justify-between items-center">
+                <h3 class="font-heading font-bold flex items-center gap-2"><i class="fa-solid fa-robot"></i> AI Schedule Planner</h3>
+                <button onclick="toggleAIModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-4">
+                <p class="text-sm text-gray-600">ให้ AI ช่วยวางแผนการเตรียมสอน หรือจัดสรรเวลาในสัปดาห์นี้</p>
+                <textarea id="ai-input" rows="3" class="w-full p-3 rounded-xl border border-gray-200 bg-white text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="เช่น สัปดาห์นี้มีสอนคอมฯ 3 คาบ และต้องตรวจข้อสอบวันศุกร์ ช่วยวางแผนเตรียมสอนให้หน่อย"></textarea>
+                
+                <button onclick="runAI()" id="btn-gen" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-sm shadow hover:bg-blue-700 transition active:scale-95">
+                    <i class="fa-solid fa-bolt text-yellow-400 mr-2"></i> สร้างแผนงาน
+                </button>
+                <div id="ai-result" class="text-sm text-gray-700 bg-blue-50 p-4 rounded-xl hidden border border-blue-100 prose prose-sm max-w-none"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-xl border-t border-gray-200 px-4 py-2 md:hidden z-50 rounded-t-2xl shadow-[0_-5px_15px_rgba(0,0,0,0.05)] no-print pb-safe">
+        <div class="relative flex justify-between items-center max-w-sm mx-auto">
+            <div id="nav-pill" class="absolute top-1/2 -translate-y-1/2 h-10 w-12 bg-blue-50 rounded-xl transition-all duration-300 ease-out -z-10"></div>
+            <a href="Main_Dashboard.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400 active-nav" data-index="0"><i class="fa-solid fa-house text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">หน้าหลัก</span></a>
+            <a href="LessonPlan_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="1"><i class="fa-solid fa-book-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">แผนการ</span></a>
+            <a href="Classroom_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="2"><i class="fa-solid fa-users text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ชั้นเรียน</span></a>
+            <a href="Project_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="3"><i class="fa-solid fa-folder-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">โครงการ</span></a>
+            <a href="TeacherPortfolio_BentoGrid.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="4"><i class="fa-solid fa-user text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ข้อมูล</span></a>
+        </div>
+    </nav>
+
+    <script>
+        const apiKey = "AIzaSyCmcCL6eAc11vaZpsFvYZwqb_zzyVPeK9o"; // API Key
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+        let selectedDayElement = null;
+
+        // Calendar Logic
+        const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+
+        function renderCalendar(month, year) {
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            const grid = document.getElementById('calendar-grid');
+            const title = document.getElementById('calendar-title'); // Fixed ID
+            
+            title.textContent = `${months[month]} ${year + 543}`;
+            grid.innerHTML = '';
+
+            // Previous Month Spacer
+            for (let i = 0; i < firstDay; i++) {
+                grid.innerHTML += `<div class="calendar-day other-month border-b border-r"></div>`;
+            }
+
+            // Days
+            for (let i = 1; i <= daysInMonth; i++) {
+                const isToday = i === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+                const todayClass = isToday ? 'today' : '';
+                grid.innerHTML += `
+                    <div class="calendar-day border-b border-r p-1 ${todayClass}" onclick="openEventModal(this, ${i})">
+                        <span class="text-sm font-bold text-gray-700">${i}</span>
+                    </div>
+                `;
+            }
+        }
+
+        function prevMonth() {
+            currentMonth--;
+            if(currentMonth < 0) { currentMonth = 11; currentYear--; }
+            renderCalendar(currentMonth, currentYear);
+        }
+
+        function nextMonth() {
+            currentMonth++;
+            if(currentMonth > 11) { currentMonth = 0; currentYear++; }
+            renderCalendar(currentMonth, currentYear);
+        }
+
+        function today() {
+            const now = new Date();
+            currentMonth = now.getMonth();
+            currentYear = now.getFullYear();
+            renderCalendar(currentMonth, currentYear);
+        }
+
+        function addNewSemester() {
+            const select = document.getElementById('semester-select');
+            const nextSem = "1/" + (parseInt(select.value.split('/')[1]) + 1); // Mock next logic
+            const opt = document.createElement('option');
+            opt.value = nextSem; opt.text = `ภาคเรียนที่ ${nextSem}`;
+            select.add(opt);
+            select.value = nextSem;
+            alert(`เพิ่มภาคเรียนใหม่: ${nextSem} เรียบร้อยแล้ว`);
+        }
+        
+        function changeSemester() {
+            alert(`เปลี่ยนเป็น ${document.getElementById('semester-select').value}`);
+        }
+
+        // View Switcher
+        function switchView(view) {
+            document.getElementById('view-calendar').classList.add('hidden');
+            document.getElementById('view-schedule').classList.add('hidden');
+            document.getElementById('btn-calendar').className = 'px-6 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-50 transition';
+            document.getElementById('btn-schedule').className = 'px-6 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-50 transition';
+
+            document.getElementById(`view-${view}`).classList.remove('hidden');
+            document.getElementById(`btn-${view}`).className = 'px-6 py-2 rounded-lg text-sm font-bold bg-blue-50 text-blue-600 transition shadow-sm';
+        }
+
+        // Event Modal
+        function openEventModal(element, dateNum) {
+            selectedDayElement = element;
+            document.getElementById('selected-date-display').textContent = `วันที่ ${dateNum} ${months[currentMonth]} ${currentYear+543}`;
+            document.getElementById('event-title').value = '';
+            document.getElementById('event-modal').classList.remove('hidden');
+        }
+
+        function closeEventModal() { document.getElementById('event-modal').classList.add('hidden'); }
+
+        function saveEvent() {
+            const title = document.getElementById('event-title').value;
+            const type = document.querySelector('input[name="event-type"]:checked').value;
+            
+            if(title && selectedDayElement) {
+                let bgClass = 'bg-red-100 text-red-600';
+                if(type === 'green') bgClass = 'bg-green-100 text-green-600';
+                if(type === 'yellow') bgClass = 'bg-yellow-100 text-yellow-700';
+
+                const badge = document.createElement('div');
+                badge.className = `event-badge ${bgClass}`;
+                badge.textContent = title;
+                selectedDayElement.appendChild(badge);
+            }
+            closeEventModal();
+        }
+
+        function saveSchedule() {
+            alert("บันทึกตารางสอนเรียบร้อย!");
+        }
+
+        // AI Logic
+        function toggleAIModal() { document.getElementById('ai-modal').classList.toggle('hidden'); }
+
+        async function runAI() {
+            const btn = document.getElementById('btn-gen');
+            const res = document.getElementById('ai-result');
+            const input = document.getElementById('ai-input').value;
+            
+            if(!input) return;
+            
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> กำลังวางแผน...';
+            btn.disabled = true;
+            res.classList.remove('hidden');
+            
+            const prompt = `ช่วยวางแผนการทำงาน/การสอนประจำสัปดาห์ให้ครู จากข้อมูลนี้: "${input}" \nจัดเป็นตารางเวลา หรือ To-do list ที่ชัดเจน (ภาษาไทย)`;
+            
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const data = await response.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Error";
+                res.innerHTML = marked.parse(text);
+            } catch(e) { res.textContent = "AI Error"; }
+            
+            btn.innerHTML = '<i class="fa-solid fa-bolt text-yellow-400 mr-2"></i> สร้างแผนงาน';
+            btn.disabled = false;
+        }
+
+        // Nav Init
+        function initNav() {
+            const pill = document.getElementById('nav-pill');
+            const activeLink = document.querySelector('.active-nav');
+            // Assuming this page is accessed via Main Dashboard or its own link,
+            // we can highlight Main (0) as parent or add a new index for Calendar.
+            // For now, let's just ensure the pill doesn't break if no active link found for this specific page in the standard set.
+            // Or we can map it to 'Project' or just leave it. 
+            // Let's highlight 'Main' (Index 0) as it's a dashboard tool.
+             const targetLink = document.querySelector('.nav-item[data-index="0"]');
+            if(targetLink) {
+                 targetLink.classList.add('active-nav');
+                 pill.style.left = targetLink.offsetLeft + 'px';
+                 pill.style.width = targetLink.offsetWidth + 'px';
+            }
+        }
+        
+        window.addEventListener('load', () => { initNav(); renderCalendar(currentMonth, currentYear); });
+        window.addEventListener('resize', initNav);
+    </script>
+</body>
+</html>
