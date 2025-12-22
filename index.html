@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Marked.js for Markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         tailwind.config = { theme: { extend: { fontFamily: { heading: ['Prompt', 'sans-serif'], body: ['Prompt', 'sans-serif'] }, animation: { 'float': 'float 6s ease-in-out infinite', 'pulse-slow': 'pulse 4s infinite', 'bounce-slow': 'bounce 2s infinite' }, keyframes: { float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-15px)' } } } } } }
@@ -36,6 +37,9 @@
         /* Markdown in Chat */
         .chat-content p { margin-bottom: 0.5rem; }
         .chat-content ul { list-style-type: disc; padding-left: 1.2rem; }
+        /* Custom Scrollbar for Chat */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
     </style>
 </head>
 <body class="font-body text-gray-800 h-screen flex flex-col items-center justify-center relative">
@@ -94,7 +98,7 @@
             <div class="flex gap-3">
                 <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex-shrink-0 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-robot"></i></div>
                 <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-gray-700 border border-gray-100">
-                    สวัสดีครับ! ผมคือ AI Assistant ประจำเว็บไซต์ครูเอกอาวุธ มีอะไรให้ผมช่วยแนะนำเกี่ยวกับระบบ หรือข้อมูลการศึกษาไหมครับ? 😊
+                    สวัสดีครับ! ผมคือ AI Assistant ประจำเว็บไซต์ของครูเอกอาวุธ สุริยะเจริญ มีอะไรให้ผมช่วยแนะนำเกี่ยวกับระบบ หรือข้อมูลการศึกษาไหมครับ? 😊
                 </div>
             </div>
         </div>
@@ -125,7 +129,10 @@
     </div>
 
     <script>
-        const apiKey = "AIzaSyCmcCL6eAc11vaZpsFvYZwqb_zzyVPeK9o";
+        // Set to empty to use environment key for preview.
+        // REPLACE WITH YOUR KEY WHEN DEPLOYING:
+        const apiKey = "";
+        
         const chatWidget = document.getElementById('chat-widget');
         const chatBody = document.getElementById('chat-body');
         const chatInput = document.getElementById('chat-input');
@@ -178,16 +185,21 @@
                     })
                 });
 
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
                 const data = await response.json();
-                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัย ระบบขัดข้องชั่วคราวครับ";
+                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัย ผมไม่เข้าใจคำถามครับ ลองถามใหม่อีกครั้งนะครับ";
 
                 // 4. Hide Typing & Add Bot Message with Typewriter
                 typingIndicator.classList.add('hidden');
                 addMessage(reply, 'bot');
 
             } catch (error) {
+                console.error(error);
                 typingIndicator.classList.add('hidden');
-                addMessage("ขออภัย เกิดข้อผิดพลาดในการเชื่อมต่อครับ 😓", 'bot');
+                addMessage("ขออภัย เกิดข้อผิดพลาดในการเชื่อมต่อครับ (API Error) 😓", 'bot');
             }
         }
 
@@ -222,22 +234,8 @@
         }
 
         function typeWriterEffect(element, text) {
-            // Render Markdown first to HTML, then simple reveal? 
-            // Markdown parsing might break with char-by-char. 
-            // Better strategy: Parse MD first, then reveal child nodes or simple text.
-            // For stability with Markdown, we'll parse first and fade in, OR type plain text if simple.
-            
-            // Let's use a robust approach: Parse Markdown -> Then stream the innerHTML? No, tags break.
-            // Simplified approach: Just type text content, then replace with Markdown at the end for formatting.
-            
             let i = 0;
             const speed = 10; // ms
-            
-            // Convert to Markdown html first to avoid raw MD display? 
-            // But we want typewriter. Let's type raw text then convert, visually okay for short texts.
-            // Or better: Just show MD parsed immediately but hidden, then reveal?
-            
-            // Let's stick to: Type text char by char (looks cool), then Apply Markdown formatting at the end.
             
             function type() {
                 if (i < text.length) {
@@ -247,7 +245,9 @@
                     setTimeout(type, speed);
                 } else {
                     // Finished typing, convert to Markdown HTML
-                    element.innerHTML = marked.parse(text);
+                    if (typeof marked !== 'undefined') {
+                        element.innerHTML = marked.parse(text);
+                    }
                     scrollToBottom();
                 }
             }
