@@ -47,7 +47,7 @@
 
     <!-- Top Navbar (Mobile only) -->
     <div class="fixed top-0 w-full bg-gray-900 text-white p-3 flex justify-between items-center z-50 no-print md:hidden shadow-md">
-        <a href="Classroom_Manager.html" class="text-sm hover:text-gray-300 flex items-center gap-1"><i class="fa-solid fa-chevron-left"></i> กลับ</a>
+        <a href="Classroom Manager.html" class="text-sm hover:text-gray-300 flex items-center gap-1"><i class="fa-solid fa-chevron-left"></i> กลับ</a>
         <span class="font-bold text-sm">รายงานผลการเรียน</span>
         <div class="w-8"></div>
     </div>
@@ -55,7 +55,7 @@
     <!-- Desktop Toolbar -->
     <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 no-print hidden md:flex">
         <button onclick="window.print()" class="bg-white text-gray-800 p-3 rounded-full shadow-lg hover:bg-gray-100 transition tooltip" title="พิมพ์"><i class="fa-solid fa-print"></i></button>
-        <a href="Classroom_Manager.html" class="bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition text-center" title="กลับ"><i class="fa-solid fa-arrow-left"></i></a>
+        <a href="Classroom Manager.html" class="bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition text-center" title="กลับ"><i class="fa-solid fa-arrow-left"></i></a>
     </div>
 
     <!-- Paper Content -->
@@ -158,8 +158,8 @@
             <div id="nav-pill" class="absolute top-1/2 -translate-y-1/2 h-10 w-12 bg-blue-50 rounded-xl transition-all duration-300 ease-out -z-10"></div>
             <a href="Main_Dashboard.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="0"><i class="fa-solid fa-house text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">หน้าหลัก</span></a>
             <a href="LessonPlan_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="1"><i class="fa-solid fa-book-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">แผนการ</span></a>
-            <a href="Classroom_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400 active-nav" data-index="2"><i class="fa-solid fa-users text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ชั้นเรียน</span></a>
-            <a href="Resource_Library.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="3"><i class="fa-solid fa-photo-film text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">คลังสื่อ</span></a>
+            <a href="Classroom Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400 active-nav" data-index="2"><i class="fa-solid fa-users text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ชั้นเรียน</span></a>
+            <a href="Resource Library.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="3"><i class="fa-solid fa-photo-film text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">คลังสื่อ</span></a>
             <a href="TeacherPortfolio_BentoGrid.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="4"><i class="fa-solid fa-user text-xl mb-1 nav-icon"></i><span class="text-[9px] font-medium">ข้อมูล</span></a>
         </div>
     </nav>
@@ -210,7 +210,7 @@
         if(docId && db) {
             onAuthStateChanged(auth, (user) => {
                 if(user) {
-                     // Path must match Classroom_Manager: artifacts/{appId}/public/data/students
+                     // Path must match Classroom Manager: artifacts/{appId}/public/data/students
                      getDoc(doc(db, 'artifacts', 'education-data-management', 'public', 'data', 'students', docId)).then((docSnap) => {
                         if (docSnap.exists()) {
                             studentData = docSnap.data();
