@@ -128,11 +128,275 @@
         © 2025 Aekarwut Suriyacharoen. All rights reserved.
     </div>
 
+    <script><!DOCTYPE html>
+<html lang="th">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJBKDWWT2P"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QJBKDWWT2P');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Welcome - Education Data Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { heading: ['Prompt', 'sans-serif'], body: ['Prompt', 'sans-serif'] }, animation: { 'float': 'float 6s ease-in-out infinite', 'pulse-slow': 'pulse 4s infinite', 'bounce-slow': 'bounce 2s infinite' }, keyframes: { float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-15px)' } } } } } }
+    </script>
+    <style>
+        body { background-color: #F5F5F7; overflow: hidden; }
+        .hero-text { background: linear-gradient(135deg, #0071e3, #42a5f5, #00C7BE); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .m-graphic { background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899); position: relative; overflow: hidden; }
+        .m-graphic::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%); animation: spin 10s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .blob { position: absolute; filter: blur(80px); z-index: -1; opacity: 0.6; animation: float 10s infinite ease-in-out alternate; }
+        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #bfdbfe; }
+        .blob-2 { bottom: -10%; right: -10%; width: 500px; height: 500px; background: #e9d5ff; animation-delay: -5s; }
+        
+        /* Chat Widget Styles */
+        #chat-widget { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); transform-origin: bottom right; }
+        .chat-open { opacity: 1; transform: scale(1); pointer-events: auto; }
+        .chat-closed { opacity: 0; transform: scale(0.9); pointer-events: none; }
+        .typing-dot { animation: typing 1.4s infinite ease-in-out both; }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+        
+        /* Markdown in Chat */
+        .chat-content p { margin-bottom: 0.5rem; }
+        .chat-content ul { list-style-type: disc; padding-left: 1.2rem; }
+        /* Custom Scrollbar for Chat */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+    </style>
+</head>
+<body class="font-body text-gray-800 h-screen flex flex-col items-center justify-center relative">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <!-- Main Content -->
+    <div class="glass-panel p-8 md:p-16 rounded-[2.5rem] max-w-5xl w-[90%] flex flex-col md:flex-row items-center gap-10 md:gap-16 transform transition-all hover:scale-[1.01] duration-500 z-10">
+        <div class="relative group cursor-pointer">
+            <div class="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur opacity-40 group-hover:opacity-70 transition duration-500 animate-pulse-slow"></div>
+            <div class="relative w-40 h-40 md:w-56 md:h-56 rounded-full border-[6px] border-white shadow-2xl flex items-center justify-center m-graphic group-hover:rotate-6 transition-transform duration-500">
+                <span class="relative z-10 font-heading font-bold text-7xl md:text-8xl text-white drop-shadow-lg select-none">M</span>
+            </div>
+        </div>
+
+        <div class="text-center md:text-left">
+            <div class="inline-block px-4 py-1.5 mb-4 text-xs font-bold tracking-wider text-blue-600 uppercase bg-blue-50 rounded-full border border-blue-100 shadow-sm">
+                โรงเรียนเทศบาล ๑ บ้านกลาง
+            </div>
+            <h1 class="font-heading text-4xl md:text-6xl font-bold leading-tight mb-2 hero-text">
+                Education Data<br>Management
+            </h1>
+            <p class="text-lg text-gray-500 font-medium mb-8">ระบบบริหารจัดการข้อมูลการศึกษาดิจิทัลครบวงจร</p>
+            
+            <a href="Main_Dashboard.html" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-200 bg-blue-600 border border-transparent rounded-full shadow-lg hover:bg-blue-700 hover:shadow-blue-500/30 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600">
+                เข้าสู่ระบบ <i class="fa-solid fa-arrow-right-to-bracket ml-2"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Chat Widget Button -->
+    <button onclick="toggleChat()" class="fixed bottom-6 right-6 z-50 w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition duration-300 animate-bounce-slow group">
+        <i class="fa-solid fa-robot text-2xl group-hover:rotate-12 transition"></i>
+        <span class="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></span>
+    </button>
+
+    <!-- Chat Window -->
+    <div id="chat-widget" class="fixed bottom-24 right-6 z-50 w-[350px] md:w-[400px] h-[500px] bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 flex flex-col overflow-hidden chat-closed">
+        <!-- Chat Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-4 text-white flex justify-between items-center flex-shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm">AI Assistant</h3>
+                    <p class="text-[10px] text-blue-100 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span> ออนไลน์</p>
+                </div>
+            </div>
+            <button onclick="toggleChat()" class="text-white/80 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+
+        <!-- Chat Body -->
+        <div id="chat-body" class="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50/50 custom-scrollbar">
+            <!-- Welcome Message -->
+            <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex-shrink-0 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-robot"></i></div>
+                <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-gray-700 border border-gray-100">
+                    สวัสดีครับ! ผมคือ AI Assistant ประจำเว็บไซต์ของครูเอกอาวุธ สุริยะเจริญ มีอะไรให้ผมช่วยแนะนำเกี่ยวกับระบบ หรือข้อมูลการศึกษาไหมครับ? 😊
+                </div>
+            </div>
+        </div>
+
+        <!-- Typing Indicator (Hidden by default) -->
+        <div id="typing-indicator" class="px-4 py-2 hidden">
+            <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex-shrink-0 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-robot"></i></div>
+                <div class="bg-white px-4 py-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 flex gap-1 items-center h-10">
+                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div>
+                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div>
+                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="p-3 bg-white border-t border-gray-100 flex gap-2 flex-shrink-0">
+            <input type="text" id="chat-input" class="flex-1 bg-gray-100 border-0 rounded-full px-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="พิมพ์ข้อความ..." onkeypress="handleEnter(event)">
+            <button onclick="sendMessage()" class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition shadow-md">
+                <i class="fa-solid fa-paper-plane text-xs"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="absolute bottom-6 text-center w-full text-xs text-gray-400">
+        © 2025 Aekarwut Suriyacharoen. All rights reserved.
+    </div>
+
     <script>
         // Set to empty to use environment key for preview.
         // REPLACE WITH YOUR KEY WHEN DEPLOYING:
-        const apiKey = "AIzaSyCmcCL6eAc11vaZpsFvYZwqb_zzyVPeK9o";
+        const apiKey = "";
         
+        const chatWidget = document.getElementById('chat-widget');
+        const chatBody = document.getElementById('chat-body');
+        const chatInput = document.getElementById('chat-input');
+        const typingIndicator = document.getElementById('typing-indicator');
+
+        function toggleChat() {
+            if (chatWidget.classList.contains('chat-closed')) {
+                chatWidget.classList.remove('chat-closed');
+                chatWidget.classList.add('chat-open');
+                setTimeout(() => chatInput.focus(), 300);
+            } else {
+                chatWidget.classList.remove('chat-open');
+                chatWidget.classList.add('chat-closed');
+            }
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        function scrollToBottom() {
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            // 1. Add User Message
+            addMessage(text, 'user');
+            chatInput.value = '';
+            
+            // 2. Show Typing
+            typingIndicator.classList.remove('hidden');
+            scrollToBottom();
+
+            // 3. Call Gemini
+            try {
+                // Using the specific model as requested in previous contexts or default generic call
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            role: "user",
+                            parts: [{ text: text }]
+                        }],
+                        systemInstruction: {
+                            parts: [{ text: "คุณคือผู้ช่วย AI อัจฉริยะด้านการศึกษา ประจำเว็บไซต์ของครูเอกอาวุธ สุริยะเจริญ (ครูคอมพิวเตอร์ โรงเรียนเทศบาล ๑ บ้านกลาง) มีความเชี่ยวชาญในการตอบคำถามวิชาการ ให้คำแนะนำเรื่องการเรียนการสอน เทคโนโลยีการศึกษา และช่วยค้นคว้าความรู้ต่างๆ รวมถึงแนะนำข้อมูลในเว็บไซต์นี้ จงตอบคำถามอย่างถูกต้อง สุภาพ เป็นกันเอง และใช้ Emoji ประกอบเล็กน้อย เพื่อกระตุ้นการเรียนรู้" }]
+                        },
+                        // Add safety settings to prevent blocking
+                        safetySettings: [
+                            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                        ]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัย ผมไม่เข้าใจคำถามครับ ลองถามใหม่อีกครั้งนะครับ";
+
+                // 4. Hide Typing & Add Bot Message with Typewriter
+                typingIndicator.classList.add('hidden');
+                addMessage(reply, 'bot');
+
+            } catch (error) {
+                console.error(error);
+                typingIndicator.classList.add('hidden');
+                addMessage("ขออภัย เกิดข้อผิดพลาดในการเชื่อมต่อครับ (API Error) 😓", 'bot');
+            }
+        }
+
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            
+            if (sender === 'user') {
+                div.className = "flex gap-3 justify-end";
+                div.innerHTML = `
+                    <div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none shadow-md text-sm text-white max-w-[80%]">
+                        ${text}
+                    </div>
+                `;
+                chatBody.appendChild(div);
+                scrollToBottom();
+            } else {
+                div.className = "flex gap-3";
+                // ID for typewriter target
+                const msgId = 'msg-' + Date.now();
+                div.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex-shrink-0 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-robot"></i></div>
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-gray-700 border border-gray-100 max-w-[85%] chat-content" id="${msgId}">
+                        <!-- Typewriter text goes here -->
+                    </div>
+                `;
+                chatBody.appendChild(div);
+                scrollToBottom();
+                
+                // Typewriter Effect
+                typeWriterEffect(document.getElementById(msgId), text);
+            }
+        }
+
+        function typeWriterEffect(element, text) {
+            let i = 0;
+            const speed = 10; 
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    chatBody.scrollTop = chatBody.scrollHeight; // Auto scroll while typing
+                    setTimeout(type, speed);
+                } else {
+                    // Finished typing, convert to Markdown HTML
+                    if (typeof marked !== 'undefined') {
+                        element.innerHTML = marked.parse(text);
+                    }
+                    scrollToBottom();
+                }
+            }
+            type();
+        }
+    </script>
+</body>
+</html>
+        // Set to empty to use environment key for preview.
+        // REPLACE WITH YOUR KEY WHEN DEPLOYING:
+        const apiKey = "AIzaSyCmcCL6eAc11vaZpsFvYZwqb_zzyVPeK9o"; 
         const chatWidget = document.getElementById('chat-widget');
         const chatBody = document.getElementById('chat-body');
         const chatInput = document.getElementById('chat-input');
