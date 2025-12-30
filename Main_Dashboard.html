@@ -1,271 +1,184 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJBKDWWT2P"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QJBKDWWT2P');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Main Dashboard - Education Data Management</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>Main Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { heading: ['Prompt', 'sans-serif'], body: ['Sarabun', 'sans-serif'] },
-                    colors: { 'primary': '#0071e3', 'apple-gray': '#F5F5F7' },
-                    boxShadow: { 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)', 'hover': '0 10px 25px -5px rgba(0, 0, 0, 0.1)' },
-                    animation: { 
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 3s ease-in-out infinite',
-                        'spin-slow': 'spin 3s linear infinite'
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body { background-color: #F5F5F7; background-image: radial-gradient(#E1E1E6 1px, transparent 1px); background-size: 20px 20px; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #F5F5F7; font-family: 'Prompt', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .bento-card { background: white; border-radius: 1.5rem; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); position: relative; }
+        .bento-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-color: #3b82f6; z-index: 10; }
+        .bento-card::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, #0071e3, #42a5f5, #00C7BE); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease-out; }
+        .bento-card:hover::after { transform: scaleX(1); }
+        .hero-text { background: linear-gradient(135deg, #0071e3, #42a5f5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .m-graphic { background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899); }
         
-        /* Glassmorphism Effect */
-        .glass { 
-            background: rgba(255, 255, 255, 0.7); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px); 
-            border: 1px solid rgba(255, 255, 255, 0.5); 
-        }
+        /* Reveal Content Style */
+        .reveal-content { max-height: 0; opacity: 0; transition: all 0.4s ease; transform: translateY(10px); overflow: hidden; }
+        .bento-card:hover .reveal-content { max-height: 300px; opacity: 1; transform: translateY(0); margin-top: 0.5rem; }
         
-        .bento-card { 
-            background: white; border: 1px solid rgba(0,0,0,0.05); border-radius: 1.5rem; overflow: hidden; position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease; 
-        }
-        .bento-card:hover { 
-            transform: translateY(-4px); 
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); 
-            z-index: 10; border-color: #0071e3; 
-        }
-        
-        .hero-gradient-text { background: linear-gradient(135deg, #0071e3, #42a5f5, #00C7BE); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        /* Reveal Animation on Hover (Desktop) & Always Show (Mobile) */
-        .reveal-content {
-            max-height: 0; opacity: 0; transition: all 0.4s ease-in-out; transform: translateY(10px);
-        }
-        .bento-card:hover .reveal-content {
-            max-height: 500px; opacity: 1; transform: translateY(0); margin-top: 1rem;
-        }
+        /* Mobile Optimization: Show content always on small screens if needed, but here we keep hover behavior or tap to expand */
         @media (max-width: 768px) {
             .reveal-content { max-height: none; opacity: 1; transform: translateY(0); margin-top: 0.5rem; display: block; }
         }
 
-        .bento-card:hover .main-icon {
-            transform: scale(0.8) translateY(-10px);
-            color: #0071e3;
-        }
+        .bento-card:hover .main-icon { transform: scale(0.9) translateY(-5px); color: #0071e3; }
         .main-icon { transition: all 0.3s ease; }
-
-        /* M Graphic */
-        .m-graphic { background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899); position: relative; overflow: hidden; }
-        .m-graphic::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%); animation: spin 10s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Quote Animation */
-        @keyframes fade-in-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .quote-box { animation: fade-in-up 1s ease-out forwards; }
+        .nav-icon { transition: transform 0.3s; }
+        .active-nav .nav-icon { transform: translateY(-5px) scale(1.1); color: #0071e3; }
+        .active-nav span { color: #0071e3; font-weight: 700; }
         
-        /* Mobile Nav Styles */
-        .nav-icon { transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
-        .active-nav .nav-icon { transform: translateY(-5px); color: #0071e3; }
-        .active-nav span { color: #0071e3; font-weight: 600; }
-        
-        /* Password Modal */
-        #passcode-modal { backdrop-filter: blur(5px); }
+        /* Loading Dots */
+        .loading-dots:after { content: ' .'; animation: dots 1s steps(5, end) infinite; }
+        @keyframes dots { 0%, 20% { color: rgba(0,0,0,0);} 40% { color: #333;} 60% { text-shadow: .25em 0 0 #333;} 80%, 100% { text-shadow: .25em 0 0 #333;}}
     </style>
 </head>
-<body class="font-body text-gray-800 p-4 md:p-8 min-h-screen pb-28 md:pb-8">
+<body class="pb-28 pt-6 px-4 md:px-8 max-w-7xl mx-auto">
 
-    <div class="max-w-7xl mx-auto space-y-6">
+    <!-- Header -->
+    <header class="flex flex-col md:flex-row justify-between items-end gap-4 mb-8 animate-fade-in-up">
+        <div>
+            <h1 class="text-2xl md:text-4xl font-bold hero-text">Education Data Management</h1>
+            <p class="text-gray-500 text-sm md:text-base mt-1">โรงเรียนเทศบาล ๑ บ้านกลาง | <span class="text-blue-600">aekarwuts@gmail.com</span></p>
+            
+            <!-- AI Quote Container -->
+            <div id="ai-quote-container" class="mt-3 flex items-center gap-2 text-xs md:text-sm text-gray-500 bg-white px-3 py-1.5 rounded-full border border-gray-100 shadow-sm inline-flex cursor-pointer hover:bg-blue-50 transition" onclick="analyzeStats()">
+                <i id="quote-icon" class="fa-solid fa-wand-magic-sparkles text-yellow-400"></i>
+                <span id="ai-quote-text" class="italic">กำลังสร้างแรงบันดาลใจ...</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+             <img src="logo-1-1-1.png" alt="Logo" class="h-10 w-auto opacity-90" onerror="this.style.display='none'">
+             <div class="text-right hidden md:block bg-white px-3 py-1 rounded-xl shadow-sm border border-gray-100">
+                <div class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">TODAY</div>
+                <div class="font-bold text-gray-700 leading-none" id="current-date">--/--/----</div>
+            </div>
+        </div>
+    </header>
 
-        <!-- Header -->
-        <header class="flex flex-col md:flex-row justify-between items-end gap-4 mb-6">
-            <div>
-                <h1 class="font-heading text-2xl md:text-3xl font-bold hero-gradient-text">Education Data Management</h1>
-                <p class="text-gray-500 font-heading text-sm md:text-base mt-1">โรงเรียนเทศบาล ๑ บ้านกลาง | <span class="text-primary">aekarwuts@gmail.com</span></p>
-                
-                <!-- AI Daily Quote Widget -->
-                <div id="ai-quote-container" class="mt-3 flex items-center gap-2 text-sm text-gray-500 bg-white/50 backdrop-blur-sm py-1 px-3 rounded-full border border-gray-200 inline-flex hidden quote-box cursor-pointer hover:bg-white" onclick="analyzeStats()">
-                    <i class="fa-solid fa-sparkles text-yellow-400"></i>
-                    <span id="ai-quote-text" class="italic">กำลังสร้างแรงบันดาลใจ...</span>
+    <!-- Stats for AI Analysis -->
+    <div class="hidden" id="stats-data">
+        Students: 145, PA: Approved, Media: 42, Eval: 4.9/5
+    </div>
+
+    <!-- Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 auto-rows-fr">
+        
+        <!-- 1. ข้อมูลพื้นฐาน -> Profile -->
+        <a href="TeacherPortfolio_BentoGrid.html" class="bento-card col-span-1 md:col-span-2 row-span-2 p-8 flex flex-col justify-center items-center text-center group cursor-pointer">
+            <div class="w-24 h-24 rounded-full border-4 border-white shadow-xl m-graphic flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-500">
+                <span class="font-heading font-bold text-5xl text-white drop-shadow-md">M</span>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 group-hover:text-blue-600 transition">ข้อมูลพื้นฐาน</h2>
+            <p class="text-sm text-gray-500 mt-2">ประวัติการศึกษา & ข้อมูลครูผู้สอน</p>
+        </a>
+
+        <!-- 2. การจัดการเรียนการสอน (มีหัวข้อย่อย & รหัสผ่าน) -->
+        <div class="bento-card col-span-1 p-6 flex flex-col justify-center items-center text-center group">
+            <div class="main-icon w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl mb-2"><i class="fa-solid fa-chalkboard-user"></i></div>
+            <h3 class="font-bold text-gray-800">การจัดการเรียนการสอน</h3>
+            
+            <!-- Sub Menu -->
+            <div class="reveal-content w-full text-left space-y-2 mt-2 bg-blue-50/50 p-2 rounded-xl">
+                <div onclick="checkPasscode('Classroom Manager.html')" class="flex items-center gap-2 p-2 bg-white rounded-lg shadow-sm hover:bg-blue-50 transition cursor-pointer">
+                    <i class="fa-solid fa-users text-blue-500 text-xs"></i> <span class="text-xs font-bold text-gray-600">ระบบชั้นเรียน/วัดผล</span> <i class="fa-solid fa-lock text-[10px] text-gray-400 ml-auto"></i>
+                </div>
+                <a href="LessonPlan_Manager.html" class="flex items-center gap-2 p-2 bg-white rounded-lg shadow-sm hover:bg-blue-50 transition cursor-pointer">
+                    <i class="fa-solid fa-book-open text-blue-500 text-xs"></i> <span class="text-xs font-bold text-gray-600">แผนการสอน</span>
+                </a>
+                <div onclick="checkPasscode('Student_Development.html')" class="flex items-center gap-2 p-2 bg-white rounded-lg shadow-sm hover:bg-blue-50 transition cursor-pointer">
+                    <i class="fa-solid fa-file-invoice text-blue-500 text-xs"></i> <span class="text-xs font-bold text-gray-600">รายงานผลรายบุคคล</span> <i class="fa-solid fa-lock text-[10px] text-gray-400 ml-auto"></i>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                 <img src="logo-1-1-1.png" alt="Logo" class="h-10 w-auto opacity-80" onerror="this.style.display='none'">
-                 <div class="text-right hidden md:block bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl border border-gray-100 shadow-sm">
-                    <div class="font-heading font-bold text-xl text-primary leading-none" id="current-time">--:--:--</div>
-                    <div class="text-[10px] text-gray-400 mt-1" id="current-date">--/--/----</div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Grid Layout -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 auto-rows-auto">
-
-            <!-- 1. ข้อมูลพื้นฐาน -> TeacherPortfolio_BentoGrid -->
-            <a href="TeacherPortfolio_BentoGrid.html" class="bento-card col-span-1 md:col-span-2 row-span-2 p-8 flex flex-col justify-center items-center text-center group cursor-pointer hover:bg-gray-50">
-                <div class="w-24 h-24 rounded-full border-4 border-white shadow-lg m-graphic flex items-center justify-center mb-4 group-hover:scale-95 transition-transform duration-300">
-                    <span class="font-heading font-bold text-5xl text-white drop-shadow-md">M</span>
-                </div>
-                <h2 class="font-heading text-2xl font-bold text-gray-800 group-hover:text-primary transition-colors">ข้อมูลพื้นฐาน</h2>
-                <p class="text-sm text-gray-500 mt-2">ประวัติการศึกษา & ข้อมูลครูผู้สอน</p>
-            </a>
-
-            <!-- 2. การจัดการเรียนการสอน (มีหัวข้อย่อย & รหัสผ่านบางหน้า) -->
-            <div class="bento-card col-span-1 p-6 flex flex-col justify-center items-center text-center group cursor-pointer hover:border-blue-300 transition">
-                <div class="main-icon w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl mb-2">
-                    <i class="fa-solid fa-chalkboard-user"></i>
-                </div>
-                <h3 class="font-heading font-bold text-gray-800 text-sm">การจัดการเรียนการสอน</h3>
-                
-                <!-- Sub Menu -->
-                <div class="reveal-content w-full text-left space-y-2 mt-2 bg-blue-50/50 p-2 rounded-xl">
-                    <div onclick="checkPasscode('Classroom Manager.html')" class="flex items-center gap-2 p-2 bg-white rounded-lg shadow-sm hover:bg-blue-50 transition cursor-pointer">
-                        <i class="fa-solid fa-users text-blue-500 text-xs"></i> <span class="text-xs font-bold text-gray-600">ระบบชั้นเรียน/วัดผล</span> <i class="fa-solid fa-lock text-[10px] text-gray-400 ml-auto"></i>
-                    </div>
-                    <a href="LessonPlan_Manager.html" class="flex items-center gap-2 p-2 bg-white rounded-lg shadow-sm hover:bg-blue-50 transition cursor-pointer">
-                        <i class="fa-solid fa-book-open text-blue-500 text-xs"></i> <span class="text-xs font-bold text-gray-600">แผนการสอน</span>
-                    </a>
-                    <div onclick="checkPasscode('Student_Development.html')" class="flex items-center gap-2 p-2 bg-white rounded-lg shadow-sm hover:bg-blue-50 transition cursor-pointer">
-                        <i class="fa-solid fa-file-invoice text-blue-500 text-xs"></i> <span class="text-xs font-bold text-gray-600">รายงานผลรายบุคคล</span> <i class="fa-solid fa-lock text-[10px] text-gray-400 ml-auto"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. โครงการ -> Project Management -->
-            <a href="Project Manager.html" class="bento-card col-span-1 p-6 flex flex-col justify-center items-center text-center group cursor-pointer">
-                <div class="main-icon w-14 h-14 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-2xl mb-2">
-                    <i class="fa-solid fa-folder-open"></i>
-                </div>
-                <h3 class="font-heading font-bold text-gray-800 text-sm">โครงการ</h3>
-                <p class="text-xs text-gray-400 mt-1 reveal-content">บริหารโครงการ & งบประมาณ</p>
-            </a>
-
-            <!-- 4. การวัดผลและประเมินผล -> Assessment Center (Locked) -->
-            <div onclick="checkPasscode('Assessment Center.html')" class="bento-card col-span-1 p-6 flex flex-col justify-center items-center text-center group cursor-pointer">
-                <div class="main-icon w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl mb-2">
-                    <i class="fa-solid fa-chart-pie"></i>
-                </div>
-                <h3 class="font-heading font-bold text-gray-800 text-sm">การวัดและประเมินผล</h3>
-                <i class="fa-solid fa-lock text-xs text-gray-400 mt-2"></i>
-                <div class="reveal-content w-full text-xs text-gray-600 bg-gray-50 p-2 rounded mt-2">
-                    <p>• ทำข้อสอบ</p>
-                    <p>• ตัดเกรด</p>
-                </div>
-            </div>
-
-            <!-- 5. พัฒนาการนักเรียน -> Development (Locked) -->
-            <div onclick="checkPasscode('Development.html')" class="bento-card col-span-1 p-6 flex flex-col justify-center items-center text-center group cursor-pointer">
-                <div class="main-icon w-14 h-14 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center text-2xl mb-2">
-                    <i class="fa-solid fa-child-reaching"></i>
-                </div>
-                <h3 class="font-heading font-bold text-gray-800 text-sm">พัฒนาการนักเรียน</h3>
-                <i class="fa-solid fa-lock text-xs text-gray-400 mt-2"></i>
-                <div class="reveal-content w-full text-xs text-gray-600 bg-gray-50 p-2 rounded mt-2">
-                    <p>• บันทึกพฤติกรรม</p>
-                </div>
-            </div>
-
-            <!-- 6. กิจกรรมพัฒนาผู้เรียน -> Activity Manager -->
-            <a href="Activity Manager.html" class="bento-card col-span-1 p-6 flex flex-col justify-center items-center text-center group cursor-pointer">
-                <div class="main-icon w-14 h-14 rounded-2xl bg-yellow-50 text-yellow-600 flex items-center justify-center text-2xl mb-2">
-                    <i class="fa-solid fa-campground"></i>
-                </div>
-                <h3 class="font-heading font-bold text-gray-800 text-sm">กิจกรรมพัฒนาผู้เรียน</h3>
-                <div class="reveal-content w-full text-xs text-gray-600 bg-gray-50 p-2 rounded mt-2">
-                    <p>• ชุมนุม</p>
-                    <p>• ลูกเสือ</p>
-                </div>
-            </a>
-
-            <!-- 7. รายงาน PA (External Links) -->
-            <div class="bento-card col-span-1 p-6 border-l-4 border-green-500 flex flex-col justify-center items-center text-center group cursor-pointer hover:bg-green-50/10">
-                <div class="main-icon w-14 h-14 rounded-full bg-green-50 text-green-600 flex items-center justify-center text-2xl mb-2">
-                    <i class="fa-solid fa-file-contract"></i>
-                </div>
-                <h3 class="font-heading font-bold text-gray-800 text-sm">รายงาน PA</h3>
-                <div class="reveal-content w-full space-y-1 mt-2 text-left">
-                    <a href="https://bk-smart-service.my.canva.site/pa-m" target="_blank" class="flex justify-between items-center p-1.5 bg-green-100 rounded hover:bg-green-200 transition cursor-pointer border border-green-100">
-                        <span class="text-xs font-bold text-green-700">ปี 2568</span>
-                        <span class="text-[9px] bg-green-500 text-white px-1.5 py-0.5 rounded-full">New</span>
-                    </a>
-                    <a href="https://sites.google.com/view/masusp320/home" target="_blank" class="flex justify-between items-center p-1.5 bg-gray-50 rounded hover:bg-gray-100 transition cursor-pointer border border-gray-100">
-                        <span class="text-xs text-gray-600">ปี 2567</span>
-                        <i class="fa-solid fa-check text-green-500 text-xs"></i>
-                    </a>
-                    <a href="https://sites.google.com/view/aekarwut21/e-portfolio-aekarwut-suriyacharean" target="_blank" class="flex justify-between items-center p-1.5 bg-gray-50 rounded hover:bg-gray-100 transition cursor-pointer border border-gray-100">
-                        <span class="text-xs text-gray-600">ปี 2566</span>
-                        <i class="fa-solid fa-check text-green-500 text-xs"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- 8. นวัตกรรม -> Innovation Hub -->
-            <a href="Innovation_Hub.html" class="bento-card bg-gradient-to-r from-[#1c1c1e] to-[#2c2c2e] text-white col-span-1 md:col-span-2 p-6 flex flex-col justify-center items-center text-center group relative overflow-hidden cursor-pointer">
-                <div class="relative z-10 group-hover:-translate-y-1 transition duration-300">
-                    <div class="main-icon text-purple-400 text-3xl mb-2 animate-float">
-                        <i class="fa-solid fa-rocket"></i>
-                    </div>
-                    <h3 class="font-heading text-lg font-bold">นวัตกรรมและเทคโนโลยี</h3>
-                    <p class="text-gray-400 text-xs mt-1">Digital Transformation & AI Tools</p>
-                </div>
-                <div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-purple-500/20 to-transparent"></div>
-            </a>
-
-            <!-- 9. ปฏิทินวิชาการ -> Calendar -->
-            <a href="Calendar.html" class="bento-card col-span-1 p-6 flex flex-col justify-center items-center text-center group cursor-pointer bg-blue-50 border-blue-100">
-                <div class="main-icon w-14 h-14 rounded-2xl bg-white text-blue-600 flex items-center justify-center text-2xl mb-2 shadow-sm">
-                    <i class="fa-regular fa-calendar-days"></i>
-                </div>
-                <h3 class="font-heading font-bold text-gray-800 text-sm">ปฏิทินวิชาการ</h3>
-                <p class="text-xs text-blue-500 mt-1">ตารางสอน & กิจกรรม</p>
-            </a>
-
-            <!-- 10. คลังสื่อการสอน -> Resource Library -->
-            <a href="Resource Library.html" class="bento-card col-span-1 p-6 flex flex-col justify-center items-center text-center group cursor-pointer">
-                <div class="main-icon w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-2xl mb-2">
-                    <i class="fa-solid fa-photo-film"></i>
-                </div>
-                <h3 class="font-heading font-bold text-gray-800 text-sm">คลังสื่อการสอน</h3>
-                <p class="text-xs text-gray-400 mt-1">ใบงาน & วิดีโอ</p>
-            </a>
-
-            <!-- 11. AI Assistant Card (Large) -->
-            <div class="bento-card col-span-1 md:col-span-2 p-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex flex-col justify-center items-center text-center group cursor-pointer relative overflow-hidden" onclick="toggleAIModal()">
-                <div class="relative z-10 group-hover:scale-110 transition duration-300">
-                    <div class="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center mb-2 mx-auto backdrop-blur-sm shadow-inner">
-                        <i class="fa-solid fa-wand-magic-sparkles text-2xl text-yellow-300"></i>
-                    </div>
-                    <h3 class="font-heading text-lg font-bold">AI Assistant</h3>
-                    <p class="text-blue-100 text-xs mt-1">ผู้ช่วยอัจฉริยะส่วนตัว (ถาม-ตอบ, ร่างงาน)</p>
-                </div>
-                <!-- Animated BG -->
-                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-xl animate-pulse-slow"></div>
-            </div>
-
         </div>
 
-        <footer class="mt-12 text-center text-gray-400 text-sm pb-8">
-            <p>© 2025 Education Data Management Digital. โรงเรียนเทศบาล ๑ บ้านกลาง</p>
-        </footer>
+        <!-- 3. โครงการ -> Project -->
+        <a href="Project Management.html" class="bento-card col-span-1 p-6 flex flex-col justify-center items-center text-center group cursor-pointer">
+            <div class="main-icon w-14 h-14 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-2xl mb-2"><i class="fa-solid fa-folder-open"></i></div>
+            <h3 class="font-heading font-bold text-gray-800 text-sm">โครงการ</h3>
+            <div class="reveal-content w-full text-xs text-gray-500 bg-gray-50 p-2 rounded">บริหารโครงการ & งบประมาณ</div>
+        </a>
+
+        <!-- 4. วัดผล -> Assessment (Locked) -->
+        <div onclick="checkPasscode('Assessment_Center.html')" class="bento-card col-span-1 p-6 flex flex-col justify-center items-center text-center group cursor-pointer">
+            <div class="main-icon w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl mb-2"><i class="fa-solid fa-chart-pie"></i></div>
+            <h3 class="font-heading font-bold text-gray-800 text-sm">การวัดและประเมินผล</h3>
+            <i class="fa-solid fa-lock text-xs text-gray-400 mt-2"></i>
+            <div class="reveal-content w-full text-xs text-gray-500 bg-gray-50 p-2 rounded mt-2">ทำข้อสอบ & ตัดเกรด</div>
+        </div>
+
+        <!-- 5. พัฒนาการนักเรียน -> Development (Locked) -->
+        <div onclick="checkPasscode('Development.html')" class="bento-card col-span-1 p-6 flex flex-col justify-center items-center text-center group cursor-pointer">
+            <div class="main-icon w-14 h-14 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center text-2xl mb-2"><i class="fa-solid fa-child-reaching"></i></div>
+            <h3 class="font-heading font-bold text-gray-800 text-sm">พัฒนาการนักเรียน</h3>
+            <i class="fa-solid fa-lock text-xs text-gray-400 mt-2"></i>
+            <div class="reveal-content w-full text-xs text-gray-500 bg-gray-50 p-2 rounded mt-2">ระบบดูแลช่วยเหลือนักเรียน</div>
+        </div>
+
+        <!-- 6. กิจกรรม -> Activity -->
+        <a href="Activity Manager.html" class="bento-card col-span-1 p-6 flex flex-col justify-center items-center text-center group">
+            <div class="main-icon w-14 h-14 rounded-2xl bg-yellow-50 text-yellow-600 flex items-center justify-center text-2xl mb-2"><i class="fa-solid fa-campground"></i></div>
+            <h3 class="font-bold text-gray-800">กิจกรรมพัฒนาผู้เรียน</h3>
+            <div class="reveal-content w-full text-xs text-gray-500 bg-gray-50 p-2 rounded">ลูกเสือ & ชุมนุม</div>
+        </a>
+
+        <!-- 7. รายงาน PA (External Links) -->
+        <div class="bento-card col-span-1 p-6 border-l-4 border-green-500 flex flex-col justify-center items-center text-center group cursor-pointer hover:bg-green-50/10">
+            <div class="main-icon w-14 h-14 rounded-full bg-green-50 text-green-600 flex items-center justify-center text-2xl mb-2"><i class="fa-solid fa-file-contract"></i></div>
+            <h3 class="font-bold text-gray-800">รายงาน PA</h3>
+            <div class="reveal-content w-full space-y-1 mt-2 text-left">
+                <a href="https://bk-smart-service.my.canva.site/pa-m" target="_blank" class="block p-1.5 rounded bg-green-100 text-green-800 text-xs hover:bg-green-200 transition font-bold flex justify-between items-center"><span>2568</span> <span class="bg-white px-1 rounded text-[9px] text-green-600">New</span></a>
+                <a href="https://sites.google.com/view/masusp320/home" target="_blank" class="block p-1.5 rounded bg-gray-50 text-gray-600 text-xs hover:bg-gray-100 transition flex justify-between">2567 <i class="fa-solid fa-check text-green-500"></i></a>
+                <a href="https://sites.google.com/view/aekarwut21/e-portfolio-aekarwut-suriyacharean" target="_blank" class="block p-1.5 rounded bg-gray-50 text-gray-600 text-xs hover:bg-gray-100 transition flex justify-between">2566 <i class="fa-solid fa-check text-green-500"></i></a>
+            </div>
+        </div>
+
+        <!-- 8. นวัตกรรม -> Innovation -->
+        <a href="Innovation_Hub.html" class="bento-card bg-gradient-to-r from-gray-900 to-gray-800 text-white col-span-1 md:col-span-2 p-6 flex flex-col justify-center items-center text-center group relative overflow-hidden cursor-pointer">
+            <div class="relative z-10 group-hover:-translate-y-1 transition duration-300">
+                <i class="fa-solid fa-rocket text-4xl text-purple-400 mb-3 animate-pulse-slow"></i>
+                <h3 class="text-xl font-bold">นวัตกรรมและเทคโนโลยี</h3>
+                <p class="text-gray-400 text-xs mt-1">Digital Transformation & AI Tools</p>
+            </div>
+            <div class="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-purple-500/20 to-transparent"></div>
+        </a>
+        
+        <!-- 9. ปฏิทินวิชาการ -> Calendar -->
+        <a href="Calendar.html" class="bento-card col-span-1 md:col-span-2 p-6 flex flex-col justify-center items-center text-center group bg-teal-50 border-teal-100 cursor-pointer">
+            <div class="main-icon w-14 h-14 rounded-2xl bg-white text-teal-600 flex items-center justify-center text-2xl mb-2 shadow-sm"><i class="fa-regular fa-calendar-days"></i></div>
+            <h3 class="font-bold text-gray-800">ปฏิทินวิชาการ</h3>
+            <div class="reveal-content w-full text-xs text-teal-600 bg-white p-2 rounded">
+                <p>• ตารางสอน</p>
+                <p>• กิจกรรมโรงเรียน</p>
+            </div>
+        </a>
+
+        <!-- 10. คลังสื่อการสอน -> Resource -->
+        <a href="Resource Library.html" class="bento-card col-span-1 p-6 flex flex-col justify-center items-center text-center group cursor-pointer">
+            <div class="main-icon w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl mb-2 shadow-sm"><i class="fa-solid fa-photo-film"></i></div>
+            <h3 class="font-bold text-gray-800">คลังสื่อการสอน</h3>
+            <div class="reveal-content w-full text-xs text-indigo-500 bg-white p-2 rounded">ใบงาน, สไลด์ & วิดีโอ</div>
+        </a>
+
+        <!-- 11. AI Assistant Card (New) -->
+        <div class="bento-card col-span-1 md:col-span-2 p-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex flex-col justify-center items-center text-center group cursor-pointer relative overflow-hidden" onclick="toggleAIModal()">
+            <div class="relative z-10 group-hover:scale-110 transition duration-300">
+                <div class="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center mb-2 mx-auto backdrop-blur-sm shadow-inner">
+                    <i class="fa-solid fa-wand-magic-sparkles text-2xl text-yellow-300"></i>
+                </div>
+                <h3 class="font-heading text-lg font-bold">AI Assistant</h3>
+                <p class="text-blue-100 text-xs mt-1">ผู้ช่วยอัจฉริยะส่วนตัว (ถาม-ตอบ, ร่างงาน)</p>
+            </div>
+            <!-- Animated BG circles -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-xl animate-pulse-slow"></div>
+            <div class="absolute bottom-0 left-0 w-24 h-24 bg-purple-500/30 rounded-full -ml-8 -mb-8 blur-xl"></div>
+        </div>
 
     </div>
 
@@ -287,16 +200,17 @@
 
     <!-- AI Modal -->
     <div id="ai-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl relative z-10 flex flex-col max-h-[85vh] overflow-hidden">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl relative overflow-hidden flex flex-col max-h-[85vh]">
             <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-4 text-white flex justify-between items-center">
-                <h3 class="font-heading font-bold flex items-center gap-2"><i class="fa-solid fa-robot"></i> ผู้ช่วยครูอัจฉริยะ (Gemini) ✨</h3>
-                <button onclick="toggleAIModal()" class="hover:bg-white/20 rounded-full p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <h3 class="font-bold flex items-center gap-2"><i class="fa-solid fa-robot"></i> AI Assistant</h3>
+                <button onclick="toggleAIModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto">
                 <label class="block text-sm font-bold text-gray-700 mb-2 font-heading">เลือกโหมดการทำงาน</label>
-                <select id="ai-mode" class="w-full p-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none mb-4 font-body">
+                <select id="ai-mode" class="w-full p-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none mb-4 font-body text-sm">
                     <optgroup label="✨ ทั่วไป">
                         <option value="general">💬 ถาม-ตอบ ทั่วไป</option>
+                        <option value="translate">🌐 แปลภาษา (TH ↔ EN)</option>
                     </optgroup>
                     <optgroup label="📚 การเรียนการสอน">
                         <option value="lesson">📝 ช่วยร่างแผนการสอน</option>
@@ -315,50 +229,46 @@
                 </select>
 
                 <label class="block text-sm font-bold text-gray-700 mb-2 font-heading">รายละเอียด / หัวข้อ</label>
-                <textarea id="ai-prompt" rows="3" class="w-full p-3 border rounded-xl mb-4 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-body" placeholder="เช่น เรื่องระบบสุริยะ, จดหมายเชิญประชุมผู้ปกครอง..."></textarea>
+                <textarea id="ai-prompt" rows="3" class="w-full p-3 border rounded-xl mb-4 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-body" placeholder="พิมพ์สิ่งที่คุณต้องการ..."></textarea>
                 
-                <button onclick="callGemini()" id="btn-gen" class="w-full bg-gray-900 text-white py-3 rounded-xl font-bold text-sm shadow-md hover:bg-black transition flex justify-center items-center gap-2">
+                <button onclick="callGemini()" id="btn-gen" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-sm shadow hover:bg-blue-700 transition flex justify-center items-center gap-2">
                     <i class="fa-solid fa-bolt text-yellow-400"></i> สร้างเนื้อหา
                 </button>
                 
-                <div id="ai-result" class="mt-6 text-sm text-gray-700 bg-blue-50 p-4 rounded-xl hidden border border-blue-100 prose prose-sm max-w-none"></div>
-                <div id="ai-image-result" class="mt-6 hidden flex justify-center"></div>
+                <div id="ai-result" class="mt-6 text-sm text-gray-700 bg-gray-50 p-4 rounded-xl hidden border border-gray-100 prose prose-sm max-w-none"></div>
+                <div id="ai-image-result" class="mt-6 hidden flex justify-center flex-col items-center"></div>
             </div>
         </div>
     </div>
 
     <!-- Bottom Nav -->
-    <nav class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-xl border-t border-gray-200 px-4 py-2 md:hidden z-50 rounded-t-2xl shadow-[0_-5px_10px_rgba(0,0,0,0.02)]">
+    <nav class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-xl border-t border-gray-200 px-4 py-2 md:hidden z-50 rounded-t-2xl shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
         <div class="relative flex justify-between items-center max-w-sm mx-auto">
             <div id="nav-pill" class="absolute top-1/2 -translate-y-1/2 h-10 w-12 bg-blue-50 rounded-xl transition-all duration-300 ease-out -z-10"></div>
-            <a href="Main_Dashboard.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400 active-nav" data-index="0">
-                <i class="fa-solid fa-house text-xl mb-1 nav-icon"></i><span class="text-[9px] font-bold">หน้าหลัก</span>
-            </a>
-            <a href="LessonPlan_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="1">
-                <i class="fa-solid fa-book-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-bold">แผนการ</span>
-            </a>
-            <a href="Classroom Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="2">
-                <i class="fa-solid fa-users text-xl mb-1 nav-icon"></i><span class="text-[9px] font-bold">ชั้นเรียน</span>
-            </a>
-            <a href="Project Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="3">
-                <i class="fa-solid fa-folder-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-bold">โครงการ</span>
-            </a>
-            <a href="TeacherPortfolio_BentoGrid.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="4">
-                <i class="fa-solid fa-user text-xl mb-1 nav-icon"></i><span class="text-[9px] font-bold">ข้อมูล</span>
-            </a>
+            <a href="Main_Dashboard.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400 active-nav" data-index="0"><i class="fa-solid fa-house text-xl mb-1 nav-icon"></i><span class="text-[9px] font-bold">หน้าหลัก</span></a>
+            <a href="LessonPlan_Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="1"><i class="fa-solid fa-book-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-bold">แผนการ</span></a>
+            <a href="Classroom Manager.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="2"><i class="fa-solid fa-users text-xl mb-1 nav-icon"></i><span class="text-[9px] font-bold">ชั้นเรียน</span></a>
+            <a href="Project Management.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="3"><i class="fa-solid fa-folder-open text-xl mb-1 nav-icon"></i><span class="text-[9px] font-bold">โครงการ</span></a>
+            <a href="TeacherPortfolio_BentoGrid.html" class="nav-item flex flex-col items-center justify-center w-12 text-gray-400" data-index="4"><i class="fa-solid fa-user text-xl mb-1 nav-icon"></i><span class="text-[9px] font-bold">ข้อมูล</span></a>
         </div>
     </nav>
 
     <script>
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
-
-        function updateDateTime() {
-            const now = new Date();
-            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-            document.getElementById('current-time').textContent = now.toLocaleTimeString('th-TH', timeOptions);
+        function toggleAIModal() { document.getElementById('ai-modal').classList.toggle('hidden'); }
+        
+        // Nav Logic
+        const navItems = document.querySelectorAll('.nav-item');
+        const pill = document.getElementById('nav-pill');
+        
+        function updateNav() {
+            const activeItem = navItems[0]; 
+            pill.style.left = activeItem.offsetLeft + 'px';
+            pill.style.width = activeItem.offsetWidth + 'px';
         }
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
+        
+        window.addEventListener('load', updateNav);
+        window.addEventListener('resize', updateNav);
 
         // Passcode Logic
         let targetUrl = '';
@@ -382,59 +292,114 @@
                 document.getElementById('passcode-input').value = '';
             }
         }
-        // Allow Enter key
         document.getElementById('passcode-input').addEventListener("keypress", function(event) {
           if (event.key === "Enter") verifyPasscode();
         });
 
-        // AI Logic
-        function toggleAIModal() { document.getElementById('ai-modal').classList.toggle('hidden'); }
-        const apiKey = "AIzaSyCmcCL6eAc11vaZpsFvYZwqb_zzyVPeK9o"; // Updated Key
+        // API Key
+        const apiKey = "AIzaSyCmcCL6eAc11vaZpsFvYZwqb_zzyVPeK9o";
 
-        // (AI Functions: analyzeStats, callGemini - Same as before)
         async function analyzeStats() {
-            // ... (Code from previous valid version) ...
             const textEl = document.getElementById('ai-quote-text');
-            textEl.textContent = "กำลังวิเคราะห์...";
-            const prompt = `สรุปภาพรวมสั้นๆ 1 ประโยคสำหรับผู้บริหาร จากข้อมูลการศึกษา (ภาษาไทย)`;
+            const iconEl = document.getElementById('quote-icon');
+            
+            textEl.textContent = "กำลังวิเคราะห์ข้อมูล...";
+            iconEl.classList.add("fa-spin");
+            
+            const stats = "นักเรียน 145 คน, PA ผ่าน, สื่อ 42 ชิ้น, ประเมิน 4.9/5";
+            const prompt = `จากข้อมูลสถิตินี้: "${stats}" ช่วยสรุปภาพรวมสั้นๆ 1 ประโยคสำหรับผู้บริหาร (ภาษาไทย)`;
+            
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                 });
                 const data = await response.json();
-                textEl.textContent = data.candidates?.[0]?.content?.parts?.[0]?.text.trim() || "ระบบพร้อมใช้งาน";
-            } catch(e) { textEl.textContent = "AI พร้อมใช้งาน"; }
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "ข้อมูลครบถ้วน พร้อมสำหรับการบริหารจัดการ";
+                textEl.textContent = text.trim();
+            } catch(e) { 
+                textEl.textContent = "ระบบ AI ขัดข้องชั่วคราว"; 
+            } finally {
+                iconEl.classList.remove("fa-spin");
+            }
         }
 
         async function callGemini() {
             const promptInput = document.getElementById('ai-prompt').value;
+            const mode = document.getElementById('ai-mode').value;
             const resDiv = document.getElementById('ai-result');
+            const imgDiv = document.getElementById('ai-image-result');
             const btn = document.getElementById('btn-gen');
-            if(!promptInput) return;
-            btn.innerHTML = '...'; btn.disabled = true; resDiv.classList.remove('hidden');
             
+            if(!promptInput) { alert("กรุณาระบุหัวข้อครับ"); return; }
+            
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> กำลังประมวลผล...';
+            btn.disabled = true;
+            resDiv.classList.add('hidden');
+            imgDiv.classList.add('hidden');
+            resDiv.innerHTML = '';
+            imgDiv.innerHTML = '';
+
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ contents: [{ parts: [{ text: promptInput }] }] })
-                });
-                const data = await response.json();
-                resDiv.innerHTML = marked.parse(data.candidates[0].content.parts[0].text);
-            } catch(e) { resDiv.innerHTML = "Error"; }
-            btn.innerHTML = 'สร้างเนื้อหา'; btn.disabled = false;
+                if (mode === 'image') {
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
+                    const payload = {
+                        instances: [{ prompt: promptInput }],
+                        parameters: { sampleCount: 1 }
+                    };
+                    
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    const data = await response.json();
+                    const base64 = data.predictions?.[0]?.bytesBase64Encoded;
+                    
+                    if (base64) {
+                        imgDiv.classList.remove('hidden');
+                        imgDiv.innerHTML = `<img src="data:image/png;base64,${base64}" class="rounded-xl shadow-lg border border-gray-200 w-full max-w-xs" alt="Generated Image"><br><a href="data:image/png;base64,${base64}" download="ai-image.png" class="mt-2 inline-block text-blue-600 text-xs hover:underline">ดาวน์โหลดรูปภาพ</a>`;
+                    }
+                } else {
+                    let systemPrompt = "คุณเป็นผู้ช่วยครูอัจฉริยะ ตอบคำถามกระชับและเป็นประโยชน์ด้วยภาษาไทย";
+                    let userPrompt = promptInput;
+
+                    if (mode === 'translate') systemPrompt = "คุณคือนักแปลภาษาผู้เชี่ยวชาญ แปลข้อความต่อไปนี้เป็นภาษาไทย หรือเป็นอังกฤษ ให้สละสลวย";
+                    else if (mode === 'lesson') systemPrompt = "คุณเป็นผู้เชี่ยวชาญด้านการศึกษา เขียนแผนการสอนภาษาไทยที่ละเอียด";
+                    else if (mode === 'quiz') systemPrompt = "คุณเป็นครู ออกข้อสอบปรนัย 5 ข้อ พร้อมเฉลย ภาษาไทย";
+                    else if (mode === 'rubric') systemPrompt = "สร้างเกณฑ์การให้คะแนน (Rubric) แบบตาราง Markdown";
+                    else if (mode === 'simplify') systemPrompt = "ย่อยเนื้อหายากๆ ให้เด็กเข้าใจง่าย ใช้ภาษาเป็นกันเอง";
+                    else if (mode === 'document') systemPrompt = "ร่างหนังสือราชการ/จดหมาย อย่างเป็นทางการ";
+                    else if (mode === 'analysis') systemPrompt = "วิเคราะห์พฤติกรรมนักเรียนและให้คำแนะนำเชิงจิตวิทยา";
+
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            contents: [{ parts: [{ text: userPrompt }] }],
+                            systemInstruction: { parts: [{ text: systemPrompt }] }
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "เกิดข้อผิดพลาดในการสร้างเนื้อหา";
+                    resDiv.classList.remove('hidden');
+                    resDiv.innerHTML = marked.parse(text);
+                }
+
+            } catch (e) { 
+                resDiv.classList.remove('hidden');
+                resDiv.innerHTML = '<p class="text-red-500 text-center">เกิดข้อผิดพลาดในการเชื่อมต่อ</p>'; 
+            }
+            
+            btn.innerHTML = 'สร้างเนื้อหา';
+            btn.disabled = false;
         }
 
-        // Nav Logic
-        function initNav() {
-            const pill = document.getElementById('nav-pill');
-            const activeLink = document.querySelector('.active-nav');
-            if(activeLink) {
-                pill.style.left = activeLink.offsetLeft + 'px';
-                pill.style.width = activeLink.offsetWidth + 'px';
-            }
-        }
-        window.addEventListener('load', initNav); window.addEventListener('resize', initNav);
+        // Auto fetch quote/insight on load
         analyzeStats();
     </script>
 </body>
